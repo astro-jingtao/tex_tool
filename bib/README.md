@@ -3,7 +3,7 @@
 Inspired by https://github.com/MartKl/merge_bibtex_files
 
 ## File
-`merge.bib.py`
+`merge_bib.py`
 
 ## Overview
 
