@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tex_tool"
+version = "0.1.0"
+description = "Utilities for TeX, BibTeX, and LTeX."
+requires-python = ">=3.8"
+dependencies = [
+    "bibtexparser>=1.4.0",
+]
+
+[project.scripts]
+tex-tool-merge-bib = "tex_tool.bib.merge_bib:main"
+tex-tool-clean-tex = "tex_tool.clean.comments:main"
+tex-tool-combine-dict = "tex_tool.ltex.combine_dict:main"
+tex-tool-new-command = "tex_tool.ltex.new_command_to_setting:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

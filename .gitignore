@@ -1,6 +1,24 @@
 Myfile
+.history
 
 test.ipynb
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+build/
+dist/
+*.egg-info/
+
+.venv/
+venv/
+env/
 
 Ltex/new_command_to_setting/setting.json
 Ltex/new_command_to_setting/new_command.tex
