@@ -67,7 +67,7 @@ This tool runs `arxiv_latex_cleaner` on a single `.tex` file and optionally coll
 #### CLI usage
 
 ```bash
-tex-tool-clean-tex path/to/main.tex -o main_cleaned.tex
+tex-tool-clean-comments path/to/main.tex -o main_cleaned.tex
 ```
 
 Options:

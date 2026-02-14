@@ -13,7 +13,7 @@ dependencies = [
 
 [project.scripts]
 tex-tool-merge-bib = "tex_tool.bib.merge_bib:main"
-tex-tool-clean-tex = "tex_tool.clean.comments:main"
+tex-tool-clean-comments = "tex_tool.clean.comments:main"
 tex-tool-combine-dict = "tex_tool.ltex.combine_dict:main"
 tex-tool-new-command = "tex_tool.ltex.new_command_to_setting:main"
 
