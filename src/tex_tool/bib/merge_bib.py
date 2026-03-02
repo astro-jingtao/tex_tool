@@ -12,7 +12,8 @@ DEFAULT_OUTPUT = "merged.bib"
 
 def read_entries(filename: str) -> List[Dict[str, str]]:
     with open(filename, encoding="utf-8") as bibtex_file:
-        bib_database = bibtexparser.load(bibtex_file)
+        parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+        bib_database = bibtexparser.load(bibtex_file, parser=parser)
     return bib_database.entries
 
 
@@ -44,8 +45,10 @@ def remove_duplicates(
             raise ValueError("ID not found in entry")
 
         entry_id = entry["ID"]
+        # no such ID: keep
         if entry_id not in new_entries_dict:
             new_entries_dict[entry_id] = entry.copy()
+        # same ID and same DOI: remove
         elif (
             "doi" in entry
             and "doi" in new_entries_dict[entry_id]
@@ -54,6 +57,7 @@ def remove_duplicates(
             removed_entry = entry.copy()
             removed_entry["removed_reason"] = "same entry same doi"
             removed.append(removed_entry)
+        # otherwise: keep but rename ID, and report later
         else:
             i = 1
             new_id = f"{entry_id}_{i}"
@@ -64,6 +68,7 @@ def remove_duplicates(
             new_entries_dict[new_id]["ID"] = new_id
             same_entry_diff_doi.append(new_entries_dict[new_id])
 
+    # postprocess: find duplicate DOIs, and report or remove them
     doi_dict = get_doi_dict(new_entries_dict)
     same_doi_entries: List[List[Dict[str, str]]] = []
     for ids in doi_dict.values():
