@@ -1,3 +1,3 @@
 """TeX tooling utilities."""
 
-__all__ = ["bib", "clean", "ltex"]
+__all__ = ["abstract", "bib", "clean", "ltex"]

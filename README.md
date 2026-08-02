@@ -60,7 +60,7 @@ flowchart TD
 ### LaTeX cleaning
 
 - Module: `tex_tool.clean.comments`
-- CLI: `tex-tool-clean-tex`
+- CLI: `tex-tool-clean-comments`
 
 This tool runs `arxiv_latex_cleaner` on a single `.tex` file and optionally collapses consecutive blank lines.
 
@@ -74,6 +74,44 @@ Options:
 
 - `-o`, `--output`: output file
 - `--keep-newlines`: keep consecutive blank lines (default: collapse)
+
+### Abstract extraction for arXiv
+
+- Module: `tex_tool.abstract.extract`
+- CLI: `tex-tool-extract-abstract`
+
+This tool extracts the abstract from a `.tex` file and converts it to a plain-text format suitable for pasting into the arXiv submission system's abstract field. The pipeline:
+
+1. Parses `\newcommand` / `\renewcommand` / `\providecommand` definitions from the preamble.
+2. Extracts the `\begin{abstract}...\end{abstract}` block.
+3. Strips LaTeX comments (`%...`).
+4. Expands user-defined macros (iteratively to a fixed point — supports optional arguments with defaults, and is prefix-safe so `\bx` won't eat `\bxerr`).
+5. Converts font/style commands outside math mode: `{\tt ...}` → `$\tt{...}$`, `{\rm ...}` → `$\rm{...}$`, `\textbf{...}` → `$\mathbf{...}$`, `\textcolor{...}{...}` → extract content, etc.
+6. Wraps standalone LaTeX math commands (e.g. `\lesssim`, `\alpha`) that appear outside `$...$` in `$...$`.
+7. Replaces special characters: `–` → `-`, `—` → `--`, `~` → space, ` ``...'' ` → `"..."`.
+8. Collapses whitespace.
+
+Citations (`\citet`, `\citep`, etc.) are left as-is. No hardcoded logic exists for specific macro names — every command is expanded only if defined in the preamble.
+
+#### Core functions
+
+- `find_abstract_block(content: str) -> Optional[str]`
+- `clean_latex_comments(text: str) -> str`
+- `extract_balanced_braces(s: str, start: int) -> Tuple[str, int]`
+- `parse_newcommands(content: str) -> Dict[str, dict]`
+- `expand_macros(text: str, definitions: Dict[str, dict]) -> str`
+- `find_math_regions(text: str) -> List[Tuple[int, int]]`
+- `wrap_standalone_math_commands(text: str, math_regions: List[...]) -> str`
+- `convert_font_commands(text: str, math_regions: List[...]) -> str`
+- `convert_special_chars(text: str) -> str`
+- `extract_abstract_from_tex(tex_path: str) -> str`
+
+#### CLI usage
+
+```bash
+tex-tool-extract-abstract main.tex
+tex-tool-extract-abstract main.tex -o abstract.txt
+```
 
 ### LTeX dictionary combine
 
@@ -113,7 +151,8 @@ pip install -e .
 
 - Python 3.8+
 - `bibtexparser`
-- `arxiv_latex_cleaner` (external CLI, required only for `tex-tool-clean-tex`)
+- `arxiv_latex_cleaner` (external CLI, required only for `tex-tool-clean-comments`)
+- The abstract extraction module uses only the Python standard library — no extra dependencies.
 
 ## Tests
 

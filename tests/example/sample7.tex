@@ -1,0 +1,305 @@
+%% Beginning of file 'sample7.tex'
+%%
+%% Version 7. Created January 2025.  
+%%
+%% AASTeX v7 calls the following external packages:
+%% times, hyperref, ifthen, hyphens, longtable, xcolor, 
+%% bookmarks, array, rotating, ulem, and lineno 
+%%
+%% RevTeX is no longer used in AASTeX v7.
+%%
+\documentclass[twocolumn]{aastex7}
+%%
+%% This initial command takes arguments that can be used to easily modify 
+%% the output of the compiled manuscript. Any combination of arguments can be 
+%% invoked like this:
+%%
+%% \documentclass[argument1,argument2,argument3,...]{aastex7}
+%%
+%% Six of the arguments are typestting options. They are:
+%%
+%%  twocolumn   : two text columns, 10 point font, single spaced article.
+%%                This is the most compact and represent the final published
+%%                derived PDF copy of the accepted manuscript from the publisher
+%%  default     : one text column, 10 point font, single spaced (default).
+%%  manuscript  : one text column, 12 point font, double spaced article.
+%%  preprint    : one text column, 12 point font, single spaced article.  
+%%  preprint2   : two text columns, 12 point font, single spaced article.
+%%  modern      : a stylish, single text column, 12 point font, article with
+%% 		  wider left and right margins. This uses the Daniel
+%% 		  Foreman-Mackey and David Hogg design.
+%%
+%% Note that you can submit to the AAS Journals in any of these 6 styles.
+%%
+%% There are other optional arguments one can invoke to allow other stylistic
+%% actions. The available options are:
+%%
+%%   astrosymb    : Loads Astrosymb font and define \astrocommands. 
+%%   tighten      : Makes baselineskip slightly smaller, only works with 
+%%                  the twocolumn substyle.
+%%   times        : uses times font instead of the default.
+%%   linenumbers  : turn on linenumbering. Note this is mandatory for AAS
+%%                  Journal submissions and revisions.
+%%   trackchanges : Shows added text in bold.
+%%   longauthor   : Do not use the more compressed footnote style (default) for 
+%%                  the author/collaboration/affiliations. Instead print all
+%%                  affiliation information after each name. Creates a much 
+%%                  longer author list but may be desirable for short 
+%%                  author papers.
+%% twocolappendix : make 2 column appendix.
+%%   anonymous    : Do not show the authors, affiliations, acknowledgments,
+%%                  and author contributions for dual anonymous review.
+%%  resetfootnote : Reset footnotes to 1 in the body of the manuscript.
+%%                  Useful when there are a lot of authors and affiliations
+%%		    in the front matter.
+%%   longbib      : Print article titles in the references. This option
+%% 		    is mandatory for PSJ manuscripts.
+%%
+%% Since v6, AASTeX has included \hyperref support. While we have built in 
+%% specific %% defaults into the classfile you can manually override them 
+%% with the \hypersetup command. For example,
+%%
+%% \hypersetup{linkcolor=red,citecolor=green,filecolor=cyan,urlcolor=magenta}
+%%
+%% will change the color of the internal links to red, the links to the
+%% bibliography to green, the file links to cyan, and the external links to
+%% magenta. Additional information on \hyperref options can be found here:
+%% https://www.tug.org/applications/hyperref/manual.html#x1-40003
+%%
+%% The "bookmarks" has been changed to "true" in hyperref
+%% to improve the accessibility of the compiled pdf file.
+%%
+%% If you want to create your own macros, you can do so
+%% using \newcommand. Your macros should appear before
+%% the \begin{document} command.
+%%
+\newcommand{\vdag}{(v)^\dagger}
+\newcommand\aastex{AAS\TeX}
+\newcommand\latex{La\TeX}
+
+\newcommand{\tocite}{\textcolor{red}{CITE} }
+\newcommand{\TAO}[1]{\textcolor{purple}{[tao:#1]}}
+% \newcommand{\edit}[1]{\textbf{#1}}
+\newcommand{\edit}[1]{#1}
+
+\newcommand{\ICO}{{I_{\rm CO}}}
+\newcommand{\Ijwst}{{I_{\rm JWST}}}
+\newcommand{\Icont}{{I_{\rm F200W}}}
+\newcommand{\Iblueraw}{{I_{\rm F770W}}}
+\newcommand{\Iblue}{{I_{\rm F770W, PAH}}}
+\newcommand{\Igreen}{{I_{\rm F1130W}}}
+\newcommand{\Ired}{{I_{\rm F2100W}}}
+
+\newcommand{\blueband}{{\rm F770W}_{\rm PAH}}
+\newcommand{\greenband}{{\rm F1130W}}
+\newcommand{\redband}{{\rm F2100W}}
+
+\newcommand{\betablue}{\beta_{\blueband}}
+\newcommand{\betagreen}{\beta_{\greenband}}
+\newcommand{\betared}{\beta_{\redband}}
+\newcommand{\betaCO}{\beta_{CO}}
+
+
+\newcommand{\nPAH}{n_{\rm PAH}}
+\newcommand{\ndust}{n_{\rm dust}}
+\newcommand{\ngas}{n_{\rm gas, cold}}
+
+\newcommand{\kKS}{k_{\rm KS}}
+\newcommand{\bKS}{b_{\rm KS}}
+\newcommand{\sigKS}{\sigma_{\rm KS}}
+
+\newcommand{\Hmolecular}{H_2}
+\newcommand{\HII}{H~{\sc ii}}
+\newcommand{\HI}{H~{\sc i}}
+\newcommand{\Halpha}{H$\alpha$~$\lambda$6563}
+\newcommand{\Hbeta}{H$\beta$~$\lambda$4861}
+\newcommand{\OIII}{[O~{\sc iii}]~$\lambda$5007}
+\newcommand{\SII}{[S~{\sc ii}]~$\lambda$$\lambda$6717,6731}
+\newcommand{\NII}{[N~{\sc ii}]~$\lambda$6583}
+
+\newcommand{\Mstar}{M_{\star}}
+\newcommand{\SFR}{{\rm SFR}}
+\newcommand{\sSFR}{{\rm sSFR}}
+\newcommand{\LCO}{L_{\rm CO}}
+\newcommand{\MHI}{M_{\rm H I}}
+\newcommand{\FWHMa}{{\rm FWHM}_{\rm ang.}}
+\newcommand{\FWHMp}{{\rm FWHM}_{\rm phy.}}
+\newcommand{\lowb}{low-$b$}
+\newcommand{\highb}{high-$b$}
+
+
+\newcommand{\btheta}{\boldsymbol {\theta}}
+\newcommand{\bphi}{\boldsymbol {\phi}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\sigmain}{\sigma_{in}}
+\newcommand{\err}[2][]{#2_{\text{err}#1}}
+\newcommand{\bxerr}{\err{\bx}}
+\newcommand{\bxerri}{\err[,i]{\bx}}
+\newcommand{\yerr}{\err{y}}
+\newcommand{\yerri}{\err[,i]{y}}
+\newcommand{\obs}[2][]{#2_{\text{obs}#1}}
+\newcommand{\bxobs}{\obs{\bx}}
+\newcommand{\bxobsi}{\obs[,i]{\bx}}
+\newcommand{\yobsi}{\obs[,i]{y}}
+
+
+\newcommand{\reproject}{{\tt reproject}}
+\newcommand{\linmix}{{\tt LINMIX}}
+\newcommand{\mlinmix}{{\tt mLINMIX}}
+\newcommand{\modr}{{\tt mODR}}
+\newcommand{\mlmethod}{{ML based method}}
+\newcommand{\ksmethod}{{KS-test based method}}
+\newcommand{\raddest}{{\tt raddest}}
+
+\newcommand{\python}{{\tt Python}}
+\newcommand{\jax}{{\tt JAX}}
+
+\newcommand{\tdks}{2D KS test}
+\newcommand{\ctest}{Cram\'er test}
+
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\defcitealias{Jing2024}{JL25}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% The following section outlines numerous optional output that
+%% can be displayed in the front matter or as running meta-data.
+%%
+%% Running header information. A short title on odd pages and 
+%% short author list on even pages. Note that this
+%% information may be modified in production.
+\shorttitle{CO-MIR Correlations}
+\shortauthors{Jing \& Li}
+%%
+%% Include dates for submitted, revised, and accepted.
+%%\received{February 1, 2025}
+%%\revised{March 1, 2025}
+%%\accepted{\today}
+%%
+%% Indicate AAS Journal the manuscript was submitted to.
+%%\submitjournal{PSJ}
+%% Note that this command adds "Submitted to " the argument.
+%%
+%% You can add a light gray and diagonal water-mark to the first page 
+%% with this command:
+%% \watermark{text}
+%% where "text", e.g. DRAFT, is the text to appear.  If the text is 
+%% long you can control the water-mark size with:
+%% \setwatermarkfontsize{dimension}
+%% where dimension is any recognized LaTeX dimension, e.g. pt, in, etc.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Use this command to indicate a subdirectory where figures are located.
+\graphicspath{{./}{figures/}}
+%% This is the end of the preamble.  Indicate the beginning of the
+%% manuscript itself with \begin{document}.
+
+\begin{document}
+
+\title{Correlations of ALMA CO(2-1) with JWST mid-infrared fluxes down to scale of $\lesssim$100 parsec in nearby star-forming galaxies from PHANGS}
+
+%% A significant change from AASTeX v6+ is in the author blocks. Now an email
+%% address is required for each author. This means that each author requires
+%% at least one of the following:
+%%
+%% \author
+%% \affiliation
+%% \email
+%%
+%% If these three commands are not available for each author, the latex
+%% compiler will issue an error and if you force the latex compiler to continue,
+%% it will generate an incomplete pdf.
+%%
+%% Multiple \affiliation commands are allowed and authors can also include
+%% an optional \altaffiliation to indicate a status, i.e. Hubble Fellow. 
+%% while affiliations are indexed as footnotes, altaffiliations are noted with
+%% with a non-numeric footnote that is set away from the numeric \affiliation 
+%% footnotes. NOTE that if an \altaffiliation command is used it must 
+%% come BEFORE the \affiliation call, right after the \author command, in 
+%% order to place the footnotes in the proper location. Because non-numeric
+%% symbols are used, \altaffiliation should be used sparingly.
+%%
+%% In v7 the \author command takes an optional argument which provides 
+%% additional metadata about the author. Authors can provide the 16 digit 
+%% ORCID, the surname (family or last) name, the given (first or fore-) name, 
+%% and a name suffix, e.g. "Jr.". The syntax is:
+%%
+%% \author[orcid=0000-0002-9072-1121,gname=Gregory,sname=Schwarz]{Greg Schwarz}
+%%
+%% This name metadata in not shown, it is only for parsing by the peer review
+%% system so authors can be more easily identified. This name information will
+%% also be sent to the publisher so they can include it in the CROSSREF 
+%% metadata. Including an orcid will hyperlink the author name to the 
+%% author's ORCID page. Note that  during compilation, LaTeX will do some 
+%% limited checking of the format of the ID to make sure it is valid. If 
+%% the "orcid-ID.png" image file is  present or in the LaTeX pathway, the 
+%% ORCID icon will appear next to the authors name.
+%%
+%% Even though emails are now required for each author, the \email does not
+%% produce output in the compiled manuscript unless the optional "show" command
+%% is used. For example,
+%%
+%% \email[show]{greg.schwarz@aas.org}
+%%
+%% All "shown" emails are show in the bottom left of the first page. Due to
+%% space constraints, only a few emails should be shown. 
+%%
+%% To identify a corresponding author, use the \correspondingauthor command.
+%% The command appends "Corresponding Author: " to the argument it appears at
+%% the bottom left of the first page like the output from \email. 
+
+
+\author[0009-0004-6271-4321]{Tao Jing}
+\affiliation{Department of Astronomy, Tsinghua University, Beijing 100084, China}
+\email[show]{tao.jing.astro@gmail.com}
+
+\author[0000-0002-8711-8970]{Cheng Li}
+\affiliation{Department of Astronomy, Tsinghua University, Beijing 100084, China}
+\email[show]{cli2015@tsinghua.edu.cn}
+
+
+\correspondingauthor{Tao Jing, Cheng Li}
+
+
+%% Use the \collaboration command to identify collaborations. This command
+%% takes an optional argument that is either a number or the word "all"
+%% which tells the compiler how many of the authors above the command to
+%% show. For example "\collaboration[all]{(DELVE Collaboration)}" wil include
+%% all the authors above this command.
+%%
+%% Mark off the abstract in the ``abstract'' environment. 
+\begin{abstract}
+We investigate the correlations of CO (2-1) emission ($\ICO$) with PAH ($\Iblue$ and $\Igreen$) and dust ($\Ired$) emission down to scales of $\lesssim$ 100 pc, by applying \raddest, a novel regression technique recently developed by \citet{Jing2024} that effectively handles uncertainties and outliers in datasets, to 19 nearby star-forming galaxies in the PHANGS sample. We find that for the majority of the data points in all galaxies, the scaling of $\ICO$ with $\Iblue$, $\Igreen$, and $\Ired$ can be well described by log-log linear relations, though with substantial dependence on ionization conditions (i.e., \HII-like, composite-like, and AGN-like). Under given ionization conditions, significant galaxy-to-galaxy variations are identified, and are primarily attributed to variations of intercept $b$, which exhibits clear bimodality. \edit{This bimodality is related to the normalized overall host galaxy star formation rate, such as specific star formation and star formation efficiency.} The differences in slope $k$ and intrinsic scatter $\sigma$ across different MIR bands ($\Iblue$, $\Igreen$, and $\Ired$) are minor compared to their galaxy-to-galaxy variations. All parameters ($k$, $b$, and $\sigma$) depend on the spatial scale of measurement, suggesting that the coupling among CO, PAH, and dust is regulated by different mechanisms at varying scales. \edit{We identify deviations from the log–log linear relation in the brightest regions, primarily characterized by a flattening of the slope.} No significant (3$\sigma$) correlations are found between global properties and the best-fit parameters. We discuss the comparison to previous studies and plausible physics behind the statistical results obtained in this work. %We suggest that the obtained results should be compared with simulations incorporating detailed molecular gas, dust, and PAH models to release their full potential on constraining the corresponding physical processes.
+\end{abstract}
+
+%% Keywords should appear after the \end{abstract} command. 
+%% The AAS Journals now uses Unified Astronomy Thesaurus (UAT) concepts:
+%% https://astrothesaurus.org
+%% You will be asked to selected these concepts during the submission process
+%% but this old "keyword" functionality is maintained in case authors want
+%% to include these concepts in their preprints.
+%%
+%% You can use the \uat command to link your UAT concepts back its source.
+\keywords{}
+
+%% From the front matter, we move on to the body of the paper.
+%% Sections are demarcated by \section and \subsection, respectively.
+%% Observe the use of the LaTeX \label
+%% command after the \subsection to give a symbolic KEY to the
+%% subsection for cross-referencing in a \ref command.
+%% You can use LaTeX's \ref and \label commands to keep track of
+%% cross-references to sections, equations, tables, and figures.
+%% That way, if you change the order of any elements, LaTeX will
+%% automatically renumber them.
+
+\section{Introduction} \label{sec:introduction}
+
+...
+
+
+\end{document}
+
+% End of file `sample7.tex'.
