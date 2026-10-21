@@ -1,18 +1,19 @@
 # tex_tool
 
-A small collection of utilities for TeX, BibTeX, and LTeX workflows. The project is packaged as a Python module with command-line entry points.
+A small collection of utilities for TeX, BibTeX, and LTeX workflows, exposed through a single CLI: `tex-tool <group> <command> ...` (`bib`, `dict` groups plus top-level `clean` and `abstract`).
 
 ## Modules and CLI
 
 ### BibTeX merge
 
 - Module: `tex_tool.bib.merge_bib`
-- CLI: `tex-tool-merge-bib`
+- CLI: `tex-tool bib merge`
 
 This tool merges multiple `.bib` files, removes duplicates based on IDs, and optionally removes entries with identical DOIs. It also writes a human-readable report.
 
 #### Core functions
 
+- `parse_entries(bibtex_text: str) -> List[Dict[str, str]]`
 - `read_entries(filename: str) -> List[Dict[str, str]]`
 - `write_entries(entries: List[Dict[str, str]], filename: str)`
 - `read_all_bibs(folder: str) -> List[Dict[str, str]]`
@@ -22,8 +23,33 @@ This tool merges multiple `.bib` files, removes duplicates based on IDs, and opt
 #### CLI usage
 
 ```bash
-tex-tool-merge-bib --folder files --output merged.bib --report report.txt
+tex-tool bib merge --folder files --output merged.bib --report report.txt
 ```
+
+### BibTeX entry management
+
+- Modules: `tex_tool.bib.entry_ops` (add / rename / search logic) and `tex_tool.bib.scix` (SciX/ADS request layer)
+- CLI: `tex-tool bib add` / `tex-tool bib rename` / `tex-tool bib search`
+
+`add` appends the raw BibTeX text — existing file formatting and comments are preserved — and fails without writing anything when an entry key collides (already in the file, or duplicated inside the incoming batch). `rename` patches only the `@type{key,` header. `search` is a case-insensitive substring search over `.bib` files or folders.
+
+#### CLI usage
+
+```bash
+# Add an entry fetched from SciX by bibcode, renaming its key on the way in
+tex-tool bib add refs.bib --scix 2024ApJS..272...24C --rename jing2024
+
+# Add entries from a local .bib file instead
+tex-tool bib add refs.bib --file source.bib
+
+# Rename an entry key in place
+tex-tool bib rename refs.bib old_key new_key
+
+# Search (all fields by default, or one field; default paths: ./files)
+tex-tool bib search "dark matter" --field title
+```
+
+The SciX token comes from `--token` or the `SCIX_TOKEN` environment variable (generate one at <https://scixplorer.org/user/settings/token>; the same API serves ADS tokens at <https://ui.adsabs.harvard.edu/help/api/>). If the SciX base URL is unreachable, pass `--api-base https://api.adsabs.harvard.edu` — the wire API is identical.
 
 Options:
 
@@ -60,14 +86,14 @@ flowchart TD
 ### LaTeX cleaning
 
 - Module: `tex_tool.clean.comments`
-- CLI: `tex-tool-clean-comments`
+- CLI: `tex-tool clean`
 
 This tool runs `arxiv_latex_cleaner` on a single `.tex` file and optionally collapses consecutive blank lines.
 
 #### CLI usage
 
 ```bash
-tex-tool-clean-comments path/to/main.tex -o main_cleaned.tex
+tex-tool clean path/to/main.tex -o main_cleaned.tex
 ```
 
 Options:
@@ -78,7 +104,7 @@ Options:
 ### Abstract extraction for arXiv
 
 - Module: `tex_tool.abstract.extract`
-- CLI: `tex-tool-extract-abstract`
+- CLI: `tex-tool abstract`
 
 This tool extracts the abstract from a `.tex` file and converts it to a plain-text format suitable for pasting into the arXiv submission system's abstract field. The pipeline:
 
@@ -109,34 +135,34 @@ Citations (`\citet`, `\citep`, etc.) are left as-is. No hardcoded logic exists f
 #### CLI usage
 
 ```bash
-tex-tool-extract-abstract main.tex
-tex-tool-extract-abstract main.tex -o abstract.txt
+tex-tool abstract main.tex
+tex-tool abstract main.tex -o abstract.txt
 ```
 
 ### LTeX dictionary combine
 
 - Module: `tex_tool.ltex.combine_dict`
-- CLI: `tex-tool-combine-dict`
+- CLI: `tex-tool dict merge`
 
 This tool merges two LTeX dictionary files into a combined output.
 
 #### CLI usage
 
 ```bash
-tex-tool-combine-dict dict1.txt dict2.txt --output dict_combine.txt
+tex-tool dict merge dict1.txt dict2.txt --output dict_combine.txt
 ```
 
 ### LTeX new-command to settings
 
 - Module: `tex_tool.ltex.new_command_to_setting`
-- CLI: `tex-tool-new-command`
+- CLI: `tex-tool dict new-command`
 
 This tool converts `new_command.tex` definitions into a JSON settings file for LTeX.
 
 #### CLI usage
 
 ```bash
-tex-tool-new-command --input new_command.tex --output setting.json
+tex-tool dict new-command --input new_command.tex --output setting.json
 ```
 
 ## Installation
@@ -151,7 +177,7 @@ pip install -e .
 
 - Python 3.8+
 - `bibtexparser`
-- `arxiv_latex_cleaner` (external CLI, required only for `tex-tool-clean-comments`)
+- `arxiv_latex_cleaner` (external CLI, required only for `tex-tool clean`)
 - The abstract extraction module uses only the Python standard library — no extra dependencies.
 
 ## Tests
