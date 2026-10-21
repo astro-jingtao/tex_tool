@@ -7,6 +7,9 @@ class TestTree:
     def test_every_command_parses(self, tmp_path) -> None:
         samples = [
             ["bib", "merge", "-f", str(tmp_path)],
+            ["bib", "add", "refs.bib", "--file", "src.bib"],
+            ["bib", "rename", "refs.bib", "a", "b"],
+            ["bib", "search", "quasar"],
             ["clean", "main.tex"],
             ["dict", "merge", "a.txt", "b.txt"],
             ["dict", "new-command", "-i", "nc.tex"],

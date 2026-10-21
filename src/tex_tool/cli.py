@@ -8,7 +8,7 @@ import argparse
 from typing import List, Optional
 
 from tex_tool.abstract import extract
-from tex_tool.bib import merge_bib
+from tex_tool.bib import entry_ops, merge_bib
 from tex_tool.clean import comments
 from tex_tool.ltex import combine_dict, new_command_to_setting
 
@@ -23,6 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     bib = top.add_parser("bib", help="BibTeX utilities")
     bib_sub = bib.add_subparsers(dest="command", required=True, metavar="COMMAND")
     merge_bib.add_subparser(bib_sub)
+    entry_ops.add_subparser(bib_sub)
 
     dictionary = top.add_parser("dict", help="LTeX dictionary utilities")
     dict_sub = dictionary.add_subparsers(dest="command", required=True, metavar="COMMAND")
