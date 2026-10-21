@@ -10,7 +10,7 @@ or unreachable, retry with the ADS base (see ADS_API_BASE).
 import urllib.error
 import urllib.request
 
-SCIX_API_BASE = "https://api.scix.xyz"
+SCIX_API_BASE = "https://scixplorer.org"
 ADS_API_BASE = "https://api.adsabs.harvard.edu"
 DEFAULT_TIMEOUT = 30.0
 
