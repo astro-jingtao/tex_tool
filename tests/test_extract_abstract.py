@@ -13,10 +13,10 @@ from tex_tool.abstract.extract import (
     extract_balanced_braces,
     find_abstract_block,
     find_math_regions,
-    main,
     parse_newcommands,
     wrap_standalone_math_commands,
 )
+from tex_tool.cli import main
 
 
 class TestExtractAbstract:
@@ -448,7 +448,7 @@ Hello World
 """,
             encoding="utf-8",
         )
-        main([str(tex)])
+        main(["abstract", str(tex)])
         captured = capsys.readouterr()
         assert "Hello World" in captured.out
 
@@ -466,6 +466,6 @@ Hello World
 """,
             encoding="utf-8",
         )
-        main([str(tex), "-o", str(out)])
+        main(["abstract", str(tex), "-o", str(out)])
         result = out.read_text(encoding="utf-8")
         assert "Hello World" in result

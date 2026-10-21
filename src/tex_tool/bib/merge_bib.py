@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import bibtexparser
 
@@ -10,11 +10,15 @@ DEFAULT_REPORT = "report.txt"
 DEFAULT_OUTPUT = "merged.bib"
 
 
+def parse_entries(bibtex_text: str) -> List[Dict[str, str]]:
+    """Parse a BibTeX string into entry dicts (accepts nonstandard types)."""
+    parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
+    return bibtexparser.loads(bibtex_text, parser=parser).entries
+
+
 def read_entries(filename: str) -> List[Dict[str, str]]:
     with open(filename, encoding="utf-8") as bibtex_file:
-        parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
-        bib_database = bibtexparser.load(bibtex_file, parser=parser)
-    return bib_database.entries
+        return parse_entries(bibtex_file.read())
 
 
 def write_entries(entries: List[Dict[str, str]], filename: str) -> None:
@@ -145,8 +149,12 @@ def write_report(
             )
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Merge BibTeX files with de-duplication.")
+COMMAND = "merge"
+COMMAND_HELP = "Merge .bib files from a folder with de-duplication"
+
+
+def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument(
         "-f",
         "--folder",
@@ -171,13 +179,10 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_REMOVE_SAME_DOI,
         help="Remove entries with the same DOI",
     )
-    return parser
+    parser.set_defaults(func=run)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-
+def run(args: argparse.Namespace) -> None:
     entries = read_all_bibs(args.folder)
     (
         new_entries_dict,
@@ -196,7 +201,3 @@ def main(argv: Optional[List[str]] = None) -> None:
         same_doi_entries=same_doi_entries,
         remove_same_doi=args.remove_same_doi,
     )
-
-
-if __name__ == "__main__":
-    main()

@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from tex_tool.bib.merge_bib import main, read_entries, remove_duplicates
+from tex_tool.bib.merge_bib import parse_entries, read_entries, remove_duplicates
+from tex_tool.cli import main
 
 
 def _write_bib(path: Path, entries: str) -> None:
@@ -74,6 +75,8 @@ class TestCli:
         )
 
         main([
+            "bib",
+            "merge",
             "--folder",
             str(folder),
             "--output",
@@ -86,6 +89,14 @@ class TestCli:
         assert report_file.exists()
         report_text = report_file.read_text(encoding="utf-8")
         assert "Merged entries:" in report_text
+
+
+class TestParseEntries:
+    def test_parses_software_entry(self) -> None:
+        entries = parse_entries("@software{m,\n title={T}\n}\n")
+
+        assert len(entries) == 1
+        assert entries[0]["ID"] == "m"
 
 
 class TestReadEntries:

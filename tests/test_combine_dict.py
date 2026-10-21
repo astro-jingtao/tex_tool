@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from tex_tool.ltex.combine_dict import combine_dict_files, main
+from tex_tool.cli import main
+from tex_tool.ltex.combine_dict import combine_dict_files
 
 
 class TestCombineDict:
@@ -25,7 +26,7 @@ class TestCombineDict:
         dict1.write_text("alpha\n", encoding="utf-8")
         dict2.write_text("beta\n", encoding="utf-8")
 
-        main([str(dict1), str(dict2), "--output", str(output)])
+        main(["dict", "merge", str(dict1), str(dict2), "--output", str(output)])
 
         combined = output.read_text(encoding="utf-8").splitlines()
         assert set(combined) == {"alpha", "beta"}

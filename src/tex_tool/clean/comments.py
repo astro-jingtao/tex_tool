@@ -6,6 +6,9 @@ import tempfile
 from pathlib import Path
 from typing import List, Optional
 
+COMMAND = "clean"
+COMMAND_HELP = "Clean a single LaTeX file with arxiv_latex_cleaner"
+
 
 def remove_excessive_newlines(file_path: Path) -> None:
     """Collapse 3+ blank lines down to a single blank line."""
@@ -66,8 +69,8 @@ def clean_single_tex(
             print(f"Error: arxiv_latex_cleaner failed: {exc.stderr}")
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Clean a single LaTeX file.")
+def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument("input", help="Input .tex file")
     parser.add_argument("-o", "--output", help="Output filename")
     parser.add_argument(
@@ -75,14 +78,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Keep consecutive blank lines (default: collapse)",
     )
-    return parser
+    parser.set_defaults(func=run)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
-    parser = build_parser()
-    args = parser.parse_args(argv)
+def run(args: argparse.Namespace) -> None:
     clean_single_tex(args.input, args.output, skip_newlines=args.keep_newlines)
-
-
-if __name__ == "__main__":
-    main()

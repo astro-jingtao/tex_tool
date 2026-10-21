@@ -679,10 +679,12 @@ def extract_abstract_from_tex(tex_path: str) -> str:
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Extract abstract from a .tex file in arXiv-compatible format."
-    )
+COMMAND = "abstract"
+COMMAND_HELP = "Extract abstract from a .tex file in arXiv-compatible format"
+
+
+def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument(
         "input",
         help="Path to the .tex file",
@@ -693,19 +695,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Output file path (default: print to stdout)",
     )
-    return parser
+    parser.set_defaults(func=run)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
-    parser = build_parser()
-    args = parser.parse_args(argv)
+def run(args: argparse.Namespace) -> None:
     result = extract_abstract_from_tex(args.input)
     if args.output:
         Path(args.output).write_text(result, encoding="utf-8")
         print(f"Abstract written to: {args.output}")
     else:
         print(result)
-
-
-if __name__ == "__main__":
-    main()

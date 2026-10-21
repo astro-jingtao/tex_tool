@@ -2,10 +2,13 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 DEFAULT_NEW_COMMAND_FILE = "./new_command.tex"
 DEFAULT_SETTING_FILE = "./setting.json"
+
+COMMAND = "new-command"
+COMMAND_HELP = "Convert new command definitions to LTeX settings JSON"
 
 
 def is_empty_line(line: str) -> bool:
@@ -28,10 +31,8 @@ def convert_new_commands(new_command_file: str, setting_file: str) -> None:
         json.dump(setting, output_file, indent=4)
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Convert new command definitions to LTeX settings JSON."
-    )
+def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument(
         "-i",
         "--input",
@@ -44,14 +45,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_SETTING_FILE,
         help="Output settings JSON",
     )
-    return parser
+    parser.set_defaults(func=run)
 
 
-def main(argv: Optional[List[str]] = None) -> None:
-    parser = build_parser()
-    args = parser.parse_args(argv)
+def run(args: argparse.Namespace) -> None:
     convert_new_commands(args.input, args.output)
-
-
-if __name__ == "__main__":
-    main()

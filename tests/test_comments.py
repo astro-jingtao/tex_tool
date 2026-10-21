@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from tex_tool.clean.comments import main, remove_excessive_newlines
+from tex_tool.clean.comments import remove_excessive_newlines
+from tex_tool.cli import main
 
 
 class TestComments:
@@ -16,7 +17,7 @@ class TestComments:
     def test_cli_invalid_file(self, tmp_path: Path, capsys) -> None:
         invalid_path = tmp_path / "missing.tex"
 
-        main([str(invalid_path)])
+        main(["clean", str(invalid_path)])
 
         captured = capsys.readouterr()
         assert "Error:" in captured.out

@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
+from tex_tool.cli import main
 from tex_tool.ltex.new_command_to_setting import (
     build_setting,
     convert_new_commands,
-    main,
 )
 
 
@@ -33,7 +33,7 @@ class TestNewCommandToSetting:
 
         input_file.write_text("\\newcommand{\\foo}{}\n", encoding="utf-8")
 
-        main(["--input", str(input_file), "--output", str(output_file)])
+        main(["dict", "new-command", "--input", str(input_file), "--output", str(output_file)])
 
         data = json.loads(output_file.read_text(encoding="utf-8"))
         assert data == {"\\foo": "dummy"}
