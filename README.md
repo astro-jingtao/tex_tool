@@ -167,7 +167,16 @@ tex-tool dict new-command --input new_command.tex --output setting.json
 
 ## Agent skill
 
-The package ships a Claude Agent Skill (driving this CLI) as package data. `tex-tool skills-path` prints its installed directory; agents deploy it by following the `SKILL-DEPLOY.md` inside that directory. In a repository checkout the skill source sits inside the package at `src/tex_tool/skills/`.
+The package ships a Claude Agent Skill (`tex-tool`) as package data — a command reference that lets an agent drive this CLI without reading the source. In a checkout the tree sits inside the package at `src/tex_tool/skills/`; installed, at `<site-packages>/tex_tool/skills/`.
+
+Locate it on any machine with either entry point:
+
+```bash
+tex-tool skills-path        # console script
+python -m tex_tool.skills   # module entry, no console script needed
+```
+
+Both print the skills directory and point at its `SKILL-DEPLOY.md`. That guide is the detailed deployment walkthrough: the `meta.yaml` checks to settle before linking, the link targets (`~/.claude/skills/<name>` user-level, `<project>/.claude/skills/<name>` project-level), and the Windows symlink caveats. Deployment links the `tex-tool/skill/` directory into one of those targets — a link keeps the deployed skill tracking the installed package; the guide covers the copy fallback.
 
 ## Installation
 
