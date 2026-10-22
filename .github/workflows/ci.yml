@@ -48,9 +48,15 @@ jobs:
       - name: Discovery entry resolves the packaged skills tree
         run: |
           python -m tex_tool.skills
-          python -c "from pathlib import Path; import tex_tool; root = Path(tex_tool.__file__).parent / 'skills'; assert (root / 'SKILL-DEPLOY.md').is_file() and (root / 'tex-tool' / 'skill' / 'SKILL.md').is_file() and not list(root.rglob('*.pyc'))"
+          python -c "from pathlib import Path; import tex_tool; root = Path(tex_tool.__file__).parent / 'skills'; assert (root / 'SKILL-DEPLOY.md').is_file() and (root / 'tex-tool' / 'skill' / 'SKILL.md').is_file()"
+          # Bytecode must be absent from the wheel itself — checking the
+          # installed tree is self-defeating: importing the package above
+          # legitimately writes __pycache__/*.pyc next to the sources.
+          python -c "import glob, zipfile; bad = [n for n in zipfile.ZipFile(glob.glob('dist/*.whl')[0]).namelist() if n.endswith('.pyc')]; assert not bad, bad"
       - name: Test against the installed wheel
-        run: python -m pytest -q
+        run: |
+          python -m pip install pytest
+          python -m pytest -q
       - name: Skills tree present in the sdist
         run: |
           tar -tzf dist/*.tar.gz | grep -F 'tex_tool/skills/tex-tool/skill/SKILL.md'
