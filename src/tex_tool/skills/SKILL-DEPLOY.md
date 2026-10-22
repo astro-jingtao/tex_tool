@@ -9,10 +9,10 @@ The tex_tool package ships Claude Agent Skills as package data under its `skills
 Where the skills live on this machine:
 
 ```bash
-tex-tool skills-path
+python -m tex_tool.skills
 ```
 
-prints the skills directory (and points at this guide); `python -m tex_tool.skills` prints the same. In a repository checkout the tree sits inside the package at `src/tex_tool/skills/`. Below, `<skills-dir>` stands for that location.
+prints the skills directory and points at this guide. In a repository checkout the tree sits inside the package at `src/tex_tool/skills/`. Below, `<skills-dir>` stands for that location.
 
 ## What a skill entry looks like
 
@@ -72,7 +72,7 @@ Make a skill visible to Claude Code by linking its `skill/` directory into a ski
 
 Prefer a link over a copy — a link reflects the installed package as it updates; a copy drifts the moment either side changes. When a link is impossible (privilege, filesystem), copy the directory instead and note that package updates will not reach the copy.
 
-Commands — replace `<skills-dir>` with the `tex-tool skills-path` output:
+Commands — replace `<skills-dir>` with the `python -m tex_tool.skills` output:
 
 Linux / macOS:
 

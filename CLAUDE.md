@@ -38,7 +38,7 @@ tex-tool bib add --help
 - `abstract/extract.py` — extracts the `\begin{abstract}...\end{abstract}` block from a `.tex` file and converts it to arXiv-compatible plain text (macro expansion, font-command conversion, special-character replacement).
 - `ltex/combine_dict.py` — merges two LTeX dictionary files by line-wise set union. Takes two positional arguments for the input files.
 - `ltex/new_command_to_setting.py` — parses `\newcommand{...}{...}` lines from a `.tex` file and writes a JSON settings file mapping each command name to `"dummy"` (a placeholder that LTeX requires).
-- `skill_deploy.py` — locates the agent-skill tree inside the package (`src/tex_tool/skills/`; the module-level entry `python -m tex_tool.skills` prints the same); `tex-tool skills-path` prints that directory and its deployment guide.
+- `skills/` — the agent-skill tree shipped as package data (`SKILL-DEPLOY.md` plus one `<name>/skill/` + `meta.yaml` container per skill); `python -m tex_tool.skills` prints its directory and deployment guide.
 
 **CLI tree** (single console script `tex-tool = "tex_tool.cli:main"` in `pyproject.toml`):
 
@@ -50,7 +50,6 @@ tex-tool bib add --help
 | `tex-tool dict merge` | `tex_tool.ltex.combine_dict` |
 | `tex-tool dict new-command` | `tex_tool.ltex.new_command_to_setting` |
 | `tex-tool abstract` | `tex_tool.abstract.extract` |
-| `tex-tool skills-path` | `tex_tool.skill_deploy` |
 
 **Pattern conventions:**
 

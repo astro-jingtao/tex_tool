@@ -1,6 +1,6 @@
 """Print the packaged skills directory and its deployment guide (``python -m tex_tool.skills``)."""
-from pathlib import Path
+from tex_tool.skills import skills_dir
 
-root = Path(__file__).resolve().parent
+root = skills_dir()
 print(root)
 print(f"Deployment guide: {root / 'SKILL-DEPLOY.md'}")

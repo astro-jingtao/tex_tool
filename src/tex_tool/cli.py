@@ -11,7 +11,6 @@ from tex_tool.abstract import extract
 from tex_tool.bib import entry_ops, merge_bib
 from tex_tool.clean import comments
 from tex_tool.ltex import combine_dict, new_command_to_setting
-from tex_tool import skill_deploy
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -33,7 +32,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     comments.add_subparser(top)
     extract.add_subparser(top)
-    skill_deploy.add_subparser(top)
     return parser
 
 

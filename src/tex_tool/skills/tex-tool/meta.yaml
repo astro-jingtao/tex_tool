@@ -6,5 +6,5 @@ requires:
     name: arxiv_latex_cleaner
     note: external PyPI CLI (pip install arxiv-latex-cleaner); needed only for `tex-tool clean`
 notes:
-  - The skill tree ships as package data inside tex_tool; locate the installed copy with tex-tool skills-path and deploy per its SKILL-DEPLOY.md.
+  - The skill tree ships as package data inside tex_tool; locate the installed copy with `python -m tex_tool.skills` and deploy per its SKILL-DEPLOY.md.
   - The tex-tool bib add --scix command needs a SciX/ADS token at use time — pass --token or set SCIX_TOKEN; nothing to provision at deploy time.
