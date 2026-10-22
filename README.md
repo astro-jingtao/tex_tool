@@ -1,5 +1,7 @@
 # tex_tool
 
+[![CI](https://github.com/astro-jingtao/tex_tool/actions/workflows/ci.yml/badge.svg)](https://github.com/astro-jingtao/tex_tool/actions/workflows/ci.yml)
+
 A small collection of utilities for TeX, BibTeX, and LTeX workflows, exposed through a single CLI: `tex-tool <group> <command> ...` (`bib`, `dict` groups plus top-level `clean` and `abstract`).
 
 ## Modules and CLI

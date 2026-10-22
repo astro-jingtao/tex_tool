@@ -11,6 +11,9 @@ dependencies = [
     "bibtexparser>=1.4.0",
 ]
 
+[project.optional-dependencies]
+test = ["pytest"]
+
 [project.scripts]
 tex-tool = "tex_tool.cli:main"
 
