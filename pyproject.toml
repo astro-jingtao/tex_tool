@@ -8,7 +8,9 @@ version = "0.1.0"
 description = "Utilities for TeX, BibTeX, and LTeX."
 requires-python = ">=3.8"
 dependencies = [
-    "bibtexparser>=1.4.0",
+    # The code uses the v1 API (bibtexparser.bparser / loads / dump); v2
+    # removed it, so keep the resolver on the 1.x line.
+    "bibtexparser>=1.4.0,<2",
 ]
 
 [project.optional-dependencies]
