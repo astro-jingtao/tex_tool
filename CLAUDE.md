@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-`tex_tool` is a small Python library packaged as `tex_tool` with four CLI entry points for TeX, BibTeX, and LTeX workflows. It uses a `src/` layout and setuptools with `pyproject.toml`; the agent-skill tree ships as package data from `src/tex_tool/skills/` (`MANIFEST.in` + `include-package-data`).
+`tex_tool` is a small Python library packaged as `tex_tool` with four CLI entry points for TeX, BibTeX, and LTeX workflows. It uses a `src/` layout and setuptools with `pyproject.toml`; the agent-skill tree ships as package data from `src/tex_tool/skills/` (`[tool.setuptools.package-data]` in `pyproject.toml`).
 
 ## Commands
 

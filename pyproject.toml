@@ -17,9 +17,10 @@ test = ["pytest"]
 [project.scripts]
 tex-tool = "tex_tool.cli:main"
 
-[tool.setuptools]
-# Ship the agent-skill tree inside the package; the file list comes from MANIFEST.in.
-include-package-data = true
+[tool.setuptools.package-data]
+# Ship the agent-skill tree inside the package; package-data patterns reach
+# both the wheel and the sdist, so no MANIFEST.in is needed.
+"tex_tool.skills" = ["SKILL-DEPLOY.md", "tex-tool/**/*"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
