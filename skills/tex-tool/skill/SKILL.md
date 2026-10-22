@@ -11,6 +11,8 @@ Drive the installed `tex-tool` CLI — the `tex_tool` Python package — for TeX
 
 Verify before first use in a session: `tex-tool --help` runs (the package is installed and importable). `tex-tool clean` additionally needs the external `arxiv_latex_cleaner` CLI on PATH.
 
+To make this skill available to Claude Code on a machine, run `tex-tool skills-path` and follow the printed deployment guide.
+
 # Command Reference
 
 ## bib — .bib file management

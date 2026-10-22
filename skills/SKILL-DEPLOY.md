@@ -1,28 +1,34 @@
-<!-- Deployment guide for the skills shipped in the tex_tool repository.
+<!-- Deployment guide for the skills shipped inside the tex_tool package.
      Written to stand alone: the reader is assumed to have no skill
      tooling beyond this file. -->
 
-# Deploying the Skills Shipped in This Repository
+# Deploying the Skills Shipped in This Package
 
-This repository ships Claude Agent Skills under `skills/`. This guide is written for the agent (or person) deploying them on a machine that carries no dedicated skill-deployment tooling — everything needed is in this file.
+The tex_tool package ships Claude Agent Skills as package data under its `skills/` directory. This guide is written for the agent (or person) deploying them on a machine that carries no dedicated skill-deployment tooling — everything needed is in this file.
 
-Paths below are relative to the repository root; this file sits at `skills/SKILL-DEPLOY.md` inside it.
+Where the skills live on this machine:
+
+```bash
+tex-tool skills-path
+```
+
+prints the skills directory (and points at this guide). In a repository checkout the same tree sits at `skills/` beside `src/`. Below, `<skills-dir>` stands for that location.
 
 ## What a skill entry looks like
 
 Each skill occupies two layers:
 
 ```text
-skills/<name>/            container (a repository concept)
-├── skill/                the skill proper — SKILL.md plus supporting files
-└── meta.yaml             external-dependency metadata — read, never deployed
+<skills-dir>/<name>/       container
+├── skill/                 the skill proper — SKILL.md plus supporting files
+└── meta.yaml              external-dependency metadata — read, never deployed
 ```
 
-Only `skills/<name>/skill/` is deployed. `meta.yaml` stays behind: it declares what the skill expects from its environment, and you read it before linking (next section).
+Only `<name>/skill/` is deployed. `meta.yaml` stays behind: it declares what the skill expects from its environment, and you read it before linking (next section).
 
-This repository ships one skill: `tex-tool` (drive the `tex-tool` CLI this package installs).
+The package ships one skill: `tex-tool` (drive the `tex-tool` CLI).
 
-## Before linking: install the CLI and read meta.yaml
+## Before linking: install the package and read meta.yaml
 
 The skill drives the `tex-tool` console script, so install this package first — from a checkout at the repository root:
 
@@ -36,7 +42,7 @@ or without a checkout:
 pip install git+https://github.com/astro-jingtao/tex_tool.git
 ```
 
-Then read `skills/<name>/meta.yaml` and settle its entries on this machine:
+Then read `<skills-dir>/<name>/meta.yaml` and settle its entries on this machine:
 
 | field | meaning | what you do before deploying |
 | ----- | ------- | ---------------------------- |
@@ -61,32 +67,32 @@ Make a skill visible to Claude Code by linking its `skill/` directory into a ski
 
 | target | link path | points at |
 | ------ | --------- | --------- |
-| user level (every project) | `~/.claude/skills/<name>` | `<repo>/skills/<name>/skill` |
+| user level (every project) | `~/.claude/skills/<name>` | `<skills-dir>/<name>/skill` |
 | project level (one project) | `<project>/.claude/skills/<name>` | same target |
 
-Prefer a link over a copy — a link reflects this repository's state as it changes; a copy drifts the moment either side changes. When a link is impossible (privilege, filesystem), copy the directory instead and note that later updates to this repository will not reach the copy.
+Prefer a link over a copy — a link reflects the installed package as it updates; a copy drifts the moment either side changes. When a link is impossible (privilege, filesystem), copy the directory instead and note that package updates will not reach the copy.
 
-Commands — replace `<repo>` with this repository's absolute path:
+Commands — replace `<skills-dir>` with the `tex-tool skills-path` output:
 
 Linux / macOS:
 
 ```bash
-ln -s <repo>/skills/<name>/skill ~/.claude/skills/<name>
+ln -s <skills-dir>/<name>/skill ~/.claude/skills/<name>
 ```
 
 Windows (PowerShell):
 
 ```powershell
-New-Item -ItemType SymbolicLink -Path "$HOME\.claude\skills\<name>" -Target "<repo>\skills\<name>\skill"
+New-Item -ItemType SymbolicLink -Path "$HOME\.claude\skills\<name>" -Target "<skills-dir>\<name>\skill"
 ```
 
 Windows requires Developer Mode or the "Create symbolic links" account right to create a symlink; a failure mentioning privilege or WinError 1314 means neither is present — enable one, or fall back to a copy:
 
 ```powershell
-Copy-Item -Recurse <repo>\skills\<name>\skill "$HOME\.claude\skills\<name>"
+Copy-Item -Recurse <skills-dir>\<name>\skill "$HOME\.claude\skills\<name>"
 ```
 
-Create a directory symlink, never a Windows junction: recursive removers (`git worktree remove`, `git clean`) walk through a junction into its target and can delete the repository's content, while a symlink is removed as the link itself.
+Create a directory symlink, never a Windows junction: recursive removers (`git worktree remove`, `git clean`) walk through a junction into its target and can delete the source content, while a symlink is removed as the link itself.
 
 ## Safety rules
 

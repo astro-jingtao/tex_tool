@@ -4,6 +4,13 @@ Notable changes, newest first. Format: skill-forge `templates/changelog.md`.
 
 ## 2026-10-22
 
+### Changed
+- Skill tree lives at the repository root (`skills/` beside `src/`) and ships inside the package (`tex_tool/skills/`) at build time; the deployment guide deploys from the installed location.
+### Added
+- `tex-tool skills-path` command printing the packaged skills directory — the deployment entry point named by the guide and the skill body.
+
+## 2026-10-22
+
 ### Added
 - Initial skill at the package's skills root (`skills/tex-tool/`): full tex-tool command reference — bib merge/add/rename/search, clean, abstract, dict merge/new-command — with defaults, failure semantics, and SciX token discipline.
 - `meta.yaml` declaring the `tex-tool` and `arxiv_latex_cleaner` CLI requirements.
