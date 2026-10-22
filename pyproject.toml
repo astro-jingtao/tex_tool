@@ -14,5 +14,9 @@ dependencies = [
 [project.scripts]
 tex-tool = "tex_tool.cli:main"
 
+[tool.setuptools]
+# Ship the agent-skill tree inside the package; the file list comes from MANIFEST.in.
+include-package-data = true
+
 [tool.setuptools.packages.find]
 where = ["src"]

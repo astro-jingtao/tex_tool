@@ -1,9 +1,9 @@
 """Locate the agent skill shipped with this package.
 
-The skill source lives at the repository root (``skills/`` beside ``src/``);
-at build time it is copied into ``tex_tool/skills/`` so installed
-distributions carry it. This module resolves that directory in both modes
-and points at the packaged deployment guide (``skills/SKILL-DEPLOY.md``).
+The skill tree lives inside the package at ``tex_tool/skills/`` — under
+``site-packages`` in an installed distribution, at ``src/tex_tool/skills/``
+in a checkout — so both modes resolve through this module's own location.
+``python -m tex_tool.skills`` prints the same directory.
 """
 import argparse
 from pathlib import Path
@@ -13,20 +13,11 @@ COMMAND_HELP = "Print the packaged agent-skill directory (deploy per its SKILL-D
 
 
 def skills_dir() -> Path:
-    """Return the directory holding the skill tree.
-
-    Installed distributions carry it under the ``tex_tool`` package; an
-    editable checkout keeps it at the repository root beside ``src/``.
-    """
-    here = Path(__file__).resolve()
-    candidates = (here.parent / "skills", here.parents[2] / "skills")
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate
-    raise FileNotFoundError(
-        "packaged skills directory not found (looked in "
-        f"{candidates[0]} and {candidates[1]})"
-    )
+    """Return the package's skills directory (checkout and installed alike)."""
+    directory = Path(__file__).resolve().parent / "skills"
+    if not directory.is_dir():
+        raise FileNotFoundError(f"packaged skills directory not found (looked in {directory})")
+    return directory
 
 
 def add_subparser(subparsers: argparse._SubParsersAction) -> None:

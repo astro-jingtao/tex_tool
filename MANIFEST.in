@@ -1,1 +1,2 @@
-recursive-include skills *
+recursive-include src/tex_tool/skills *
+global-exclude *.pyc

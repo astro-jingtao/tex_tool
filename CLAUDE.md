@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-`tex_tool` is a small Python library packaged as `tex_tool` with four CLI entry points for TeX, BibTeX, and LTeX workflows. It uses a `src/` layout and setuptools with `pyproject.toml`; the `setup.py` build hook packs the repository-root `skills/` tree into the distribution (`MANIFEST.in` covers the sdist side).
+`tex_tool` is a small Python library packaged as `tex_tool` with four CLI entry points for TeX, BibTeX, and LTeX workflows. It uses a `src/` layout and setuptools with `pyproject.toml`; the agent-skill tree ships as package data from `src/tex_tool/skills/` (`MANIFEST.in` + `include-package-data`).
 
 ## Commands
 
@@ -38,7 +38,7 @@ tex-tool bib add --help
 - `abstract/extract.py` — extracts the `\begin{abstract}...\end{abstract}` block from a `.tex` file and converts it to arXiv-compatible plain text (macro expansion, font-command conversion, special-character replacement).
 - `ltex/combine_dict.py` — merges two LTeX dictionary files by line-wise set union. Takes two positional arguments for the input files.
 - `ltex/new_command_to_setting.py` — parses `\newcommand{...}{...}` lines from a `.tex` file and writes a JSON settings file mapping each command name to `"dummy"` (a placeholder that LTeX requires).
-- `skill_deploy.py` — resolves the agent-skill tree (repo-root `skills/` in a checkout, `tex_tool/skills/` inside an installed distribution; the build copies the former into the latter); `tex-tool skills-path` prints that directory and its deployment guide.
+- `skill_deploy.py` — locates the agent-skill tree inside the package (`src/tex_tool/skills/`; the module-level entry `python -m tex_tool.skills` prints the same); `tex-tool skills-path` prints that directory and its deployment guide.
 
 **CLI tree** (single console script `tex-tool = "tex_tool.cli:main"` in `pyproject.toml`):
 

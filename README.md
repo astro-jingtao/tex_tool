@@ -167,7 +167,7 @@ tex-tool dict new-command --input new_command.tex --output setting.json
 
 ## Agent skill
 
-The package ships a Claude Agent Skill (driving this CLI) as package data. `tex-tool skills-path` prints its installed directory; agents deploy it by following the `SKILL-DEPLOY.md` inside that directory. In a repository checkout the skill source sits at `skills/` beside `src/`.
+The package ships a Claude Agent Skill (driving this CLI) as package data. `tex-tool skills-path` prints its installed directory; agents deploy it by following the `SKILL-DEPLOY.md` inside that directory. In a repository checkout the skill source sits inside the package at `src/tex_tool/skills/`.
 
 ## Installation
 

@@ -12,7 +12,7 @@ Where the skills live on this machine:
 tex-tool skills-path
 ```
 
-prints the skills directory (and points at this guide). In a repository checkout the same tree sits at `skills/` beside `src/`. Below, `<skills-dir>` stands for that location.
+prints the skills directory (and points at this guide); `python -m tex_tool.skills` prints the same. In a repository checkout the tree sits inside the package at `src/tex_tool/skills/`. Below, `<skills-dir>` stands for that location.
 
 ## What a skill entry looks like
 

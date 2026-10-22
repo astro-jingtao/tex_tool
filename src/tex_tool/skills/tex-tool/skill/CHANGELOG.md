@@ -1,6 +1,14 @@
 # Changelog — tex-tool
 
-Notable changes, newest first. Format: skill-forge `templates/changelog.md`.
+Notable changes, newest first.
+
+## 2026-10-22
+
+### Changed
+- Skills root moved inside the package: the tree lives at `src/tex_tool/skills/` (installed: `tex_tool/skills/`) instead of the repository root — a checkout-only directory never reaches the consumer.
+- `setup.py` build hook removed; the tree ships as package data via MANIFEST.in + include-package-data.
+### Added
+- Discovery entry `python -m tex_tool.skills`: prints the skills directory and its deployment-guide path.
 
 ## 2026-10-22
 
