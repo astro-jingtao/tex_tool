@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "tex_tool"
 version = "0.1.0"
 description = "Utilities for TeX, BibTeX, and LTeX."
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     # The code uses the v1 API (bibtexparser.bparser / loads / dump); v2
     # removed it, and no v2 release installs below Python 3.10 — see

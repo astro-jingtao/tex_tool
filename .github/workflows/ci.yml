@@ -1,9 +1,6 @@
 # Multi-platform tests on every push (and pull request).
 # 3.9-3.13 run on all three OSes; 3.9 verified working on the latest
-# runner images as of 2026-10. 3.8 ships as a single ubuntu cell: EOL
-# 3.8 has no darwin-arm64 and no windows builds left (the windows
-# toolcache starts at 3.10), so only linux can exercise the declared
-# 3.8 floor.
+# runner images as of 2026-10.
 name: CI
 
 on: [push, pull_request]
@@ -17,10 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-        include:
-          # 3.8 exists only as ubuntu builds — see the header comment.
-          - os: ubuntu-latest
-            python-version: "3.8"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
