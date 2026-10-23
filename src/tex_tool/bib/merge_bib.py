@@ -1,6 +1,5 @@
 import argparse
 import os
-from typing import Dict, List, Tuple
 
 import bibtexparser
 
@@ -10,26 +9,26 @@ DEFAULT_REPORT = "report.txt"
 DEFAULT_OUTPUT = "merged.bib"
 
 
-def parse_entries(bibtex_text: str) -> List[Dict[str, str]]:
+def parse_entries(bibtex_text: str) -> list[dict[str, str]]:
     """Parse a BibTeX string into entry dicts (accepts nonstandard types)."""
     parser = bibtexparser.bparser.BibTexParser(ignore_nonstandard_types=False)
     return bibtexparser.loads(bibtex_text, parser=parser).entries
 
 
-def read_entries(filename: str) -> List[Dict[str, str]]:
+def read_entries(filename: str) -> list[dict[str, str]]:
     with open(filename, encoding="utf-8") as bibtex_file:
         return parse_entries(bibtex_file.read())
 
 
-def write_entries(entries: List[Dict[str, str]], filename: str) -> None:
+def write_entries(entries: list[dict[str, str]], filename: str) -> None:
     bib_database = bibtexparser.bibdatabase.BibDatabase()
     bib_database.entries = entries
     with open(filename, "w", encoding="utf-8") as bibtex_file:
         bibtexparser.dump(bib_database, bibtex_file)
 
 
-def read_all_bibs(folder: str) -> List[Dict[str, str]]:
-    entries: List[Dict[str, str]] = []
+def read_all_bibs(folder: str) -> list[dict[str, str]]:
+    entries: list[dict[str, str]] = []
     for file in os.listdir(folder):
         if file.endswith(".bib"):
             entries += read_entries(os.path.join(folder, file))
@@ -37,12 +36,17 @@ def read_all_bibs(folder: str) -> List[Dict[str, str]]:
 
 
 def remove_duplicates(
-    entries: List[Dict[str, str]],
+    entries: list[dict[str, str]],
     remove_same_doi: bool = False,
-) -> Tuple[Dict[str, Dict[str, str]], List[Dict[str, str]], List[Dict[str, str]], List[List[Dict[str, str]]]]:
-    new_entries_dict: Dict[str, Dict[str, str]] = {}
-    removed: List[Dict[str, str]] = []
-    same_entry_diff_doi: List[Dict[str, str]] = []
+) -> tuple[
+    dict[str, dict[str, str]],
+    list[dict[str, str]],
+    list[dict[str, str]],
+    list[list[dict[str, str]]],
+]:
+    new_entries_dict: dict[str, dict[str, str]] = {}
+    removed: list[dict[str, str]] = []
+    same_entry_diff_doi: list[dict[str, str]] = []
 
     for entry in entries:
         if "ID" not in entry:
@@ -74,7 +78,7 @@ def remove_duplicates(
 
     # postprocess: find duplicate DOIs, and report or remove them
     doi_dict = get_doi_dict(new_entries_dict)
-    same_doi_entries: List[List[Dict[str, str]]] = []
+    same_doi_entries: list[list[dict[str, str]]] = []
     for ids in doi_dict.values():
         if len(ids) > 1:
             same_doi_entries.append([new_entries_dict[entry_id] for entry_id in ids])
@@ -87,8 +91,8 @@ def remove_duplicates(
     return new_entries_dict, removed, same_entry_diff_doi, same_doi_entries
 
 
-def get_doi_dict(entries_dict: Dict[str, Dict[str, str]]) -> Dict[str, List[str]]:
-    doi_dict: Dict[str, List[str]] = {}
+def get_doi_dict(entries_dict: dict[str, dict[str, str]]) -> dict[str, list[str]]:
+    doi_dict: dict[str, list[str]] = {}
     for entry_id, this_entry in entries_dict.items():
         if "doi" in this_entry:
             doi = this_entry["doi"]
@@ -100,9 +104,9 @@ def write_report(
     report_path: str,
     total_entries: int,
     merged_entries: int,
-    removed: List[Dict[str, str]],
-    same_entry_diff_doi: List[Dict[str, str]],
-    same_doi_entries: List[List[Dict[str, str]]],
+    removed: list[dict[str, str]],
+    same_entry_diff_doi: list[dict[str, str]],
+    same_doi_entries: list[list[dict[str, str]]],
     remove_same_doi: bool,
 ) -> None:
     with open(report_path, "w", encoding="utf-8") as report_file:
@@ -111,17 +115,13 @@ def write_report(
         report_file.write(f"Removed entries: {len(removed)}\n")
 
         if remove_same_doi:
-            report_file.write(
-                f"Different entry same doi: {len(same_doi_entries)} (removed)\n"
-            )
+            report_file.write(f"Different entry same doi: {len(same_doi_entries)} (removed)\n")
         else:
             report_file.write(
                 f"Different entry same doi: {len(same_doi_entries)} (only reported)\n"
             )
 
-        report_file.write(
-            f"Same entry different doi: {len(same_entry_diff_doi)} (only reported)\n"
-        )
+        report_file.write(f"Same entry different doi: {len(same_entry_diff_doi)} (only reported)\n")
         report_file.write("\n")
         report_file.write("--------------- details ---------------\n\n")
 
@@ -129,9 +129,7 @@ def write_report(
         for entry in removed:
             report_file.write(f"{entry['ID']}:\n")
             report_file.write(f"    Removed reason: {entry['removed_reason']}\n")
-            report_file.write(
-                f"    DOI: {entry.get('doi', 'None')}\n"
-            )
+            report_file.write(f"    DOI: {entry.get('doi', 'None')}\n")
 
         report_file.write("\nDifferent entry same doi:\n")
         for entries in same_doi_entries:
@@ -144,9 +142,7 @@ def write_report(
         report_file.write("\nSame entry different doi:\n")
         for entry in same_entry_diff_doi:
             report_file.write(f"{entry['ID']}:\n")
-            report_file.write(
-                f"    DOI: {entry.get('doi', 'None')}\n"
-            )
+            report_file.write(f"    DOI: {entry.get('doi', 'None')}\n")
 
 
 COMMAND = "merge"

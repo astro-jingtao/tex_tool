@@ -1,5 +1,5 @@
-import runpy
 from pathlib import Path
+import runpy
 
 from tex_tool.skills import skills_dir
 

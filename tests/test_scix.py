@@ -12,7 +12,7 @@ class TestExportBibtexOffline:
         captured = {}
 
         class FakeResponse:
-            def __init__(self, payload):
+            def __init__(self, payload) -> None:
                 self._payload = payload
 
             def read(self):
@@ -31,9 +31,7 @@ class TestExportBibtexOffline:
                 raise error
             return FakeResponse(response)
 
-        monkeypatch.setattr(
-            "tex_tool.bib.scix.urllib.request.urlopen", fake_urlopen
-        )
+        monkeypatch.setattr("tex_tool.bib.scix.urllib.request.urlopen", fake_urlopen)
         return captured
 
     def test_request_shape_and_body(self, monkeypatch) -> None:
@@ -90,8 +88,6 @@ class TestExportBibtexLive:
             # token + wire + record.
             if not str(exc).startswith("cannot reach "):
                 raise
-            text = export_bibtex(
-                "2015RaSc...50..916A", token, base_url=ADS_API_BASE
-            )
+            text = export_bibtex("2015RaSc...50..916A", token, base_url=ADS_API_BASE)
         assert text.lstrip().startswith("@")
         assert "2015RaSc...50..916A" in text

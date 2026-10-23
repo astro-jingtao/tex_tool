@@ -3,12 +3,13 @@
 Logic only — the single network interaction (fetching a BibTeX record from
 SciX) lives in :mod:`tex_tool.bib.scix` and is called by ``run_add``.
 """
+
 import argparse
-import os
-import re
 from collections import Counter
+import os
 from pathlib import Path
-from typing import Dict, List, Optional
+import re
+from typing import Optional
 
 from tex_tool.bib.merge_bib import (
     DEFAULT_BIB_FOLDER,
@@ -30,7 +31,7 @@ def _rename_key_in_text(text: str, old_key: str, new_key: str) -> str:
     return new_text
 
 
-def add_entries(bib_file: str, bibtex_text: str, rename: Optional[str] = None) -> List[str]:
+def add_entries(bib_file: str, bibtex_text: str, rename: Optional[str] = None) -> list[str]:
     """Append the entries in *bibtex_text* to *bib_file*.
 
     The target file is created when missing; existing content and formatting
@@ -43,16 +44,12 @@ def add_entries(bib_file: str, bibtex_text: str, rename: Optional[str] = None) -
         raise ValueError("no BibTeX entries found in the given source")
     if rename is not None:
         if len(incoming) != 1:
-            raise ValueError(
-                f"--rename needs exactly one incoming entry, found {len(incoming)}"
-            )
+            raise ValueError(f"--rename needs exactly one incoming entry, found {len(incoming)}")
         bibtex_text = _rename_key_in_text(bibtex_text, incoming[0]["ID"], rename)
         incoming[0]["ID"] = rename
 
     existing_ids = (
-        {entry["ID"] for entry in read_entries(bib_file)}
-        if Path(bib_file).exists()
-        else set()
+        {entry["ID"] for entry in read_entries(bib_file)} if Path(bib_file).exists() else set()
     )
     problems = []
     duplicate_in_file = [e["ID"] for e in incoming if e["ID"] in existing_ids]
@@ -62,9 +59,7 @@ def add_entries(bib_file: str, bibtex_text: str, rename: Optional[str] = None) -
         key for key, n in Counter(e["ID"] for e in incoming).items() if n > 1
     )
     if duplicate_in_batch:
-        problems.append(
-            f"duplicate key(s) in the incoming batch: {', '.join(duplicate_in_batch)}"
-        )
+        problems.append(f"duplicate key(s) in the incoming batch: {', '.join(duplicate_in_batch)}")
     if problems:
         raise ValueError("; ".join(problems))
 
@@ -93,8 +88,8 @@ def rename_entry(bib_file: str, old_key: str, new_key: str) -> None:
     Path(bib_file).write_text(_rename_key_in_text(text, old_key, new_key), encoding="utf-8")
 
 
-def collect_entries(paths: List[str]) -> List[Dict[str, str]]:
-    entries: List[Dict[str, str]] = []
+def collect_entries(paths: list[str]) -> list[dict[str, str]]:
+    entries: list[dict[str, str]] = []
     for path in paths:
         if os.path.isdir(path):
             entries += read_all_bibs(path)
@@ -104,15 +99,15 @@ def collect_entries(paths: List[str]) -> List[Dict[str, str]]:
 
 
 def search_entries(
-    paths: List[str], query: str, field: Optional[str] = None
-) -> List[Dict[str, str]]:
+    paths: list[str], query: str, field: Optional[str] = None
+) -> list[dict[str, str]]:
     """Case-insensitive substring search over .bib entries.
 
     With *field* (e.g. ``title``, ``author``, ``doi``, ``year``; ``key``
     matches the entry key) only that field is searched; without it, every
     field value, the key, and the entry type are searched.
     """
-    matches: List[Dict[str, str]] = []
+    matches: list[dict[str, str]] = []
     for entry in collect_entries(paths):
         if field is None:
             haystack = " ".join(str(value) for value in entry.values())
@@ -130,9 +125,7 @@ def run_add(args: argparse.Namespace) -> None:
     if args.scix:
         token = args.token or os.environ.get(SCIX_TOKEN_ENV)
         if not token:
-            raise ValueError(
-                f"SciX API token missing: pass --token or set ${SCIX_TOKEN_ENV}"
-            )
+            raise ValueError(f"SciX API token missing: pass --token or set ${SCIX_TOKEN_ENV}")
         bibtex_text = export_bibtex(args.scix, token, base_url=args.api_base)
     else:
         bibtex_text = Path(args.file).read_text(encoding="utf-8")
@@ -152,10 +145,7 @@ def run_search(args: argparse.Namespace) -> None:
         print("No entries found.")
         return
     for entry in matches:
-        print(
-            f"[{entry.get('ENTRYTYPE', '?')}] {entry.get('ID', '?')}: "
-            f"{entry.get('title', '')}"
-        )
+        print(f"[{entry.get('ENTRYTYPE', '?')}] {entry.get('ID', '?')}: {entry.get('title', '')}")
     plural = "y" if len(matches) == 1 else "ies"
     print(f"\n{len(matches)} entr{plural} found.")
 
@@ -177,9 +167,7 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> None:
         metavar="NEW_KEY",
         help="rename the incoming entry key before adding",
     )
-    add.add_argument(
-        "--token", help=f"SciX API token (default: env ${SCIX_TOKEN_ENV})"
-    )
+    add.add_argument("--token", help=f"SciX API token (default: env ${SCIX_TOKEN_ENV})")
     add.add_argument(
         "--api-base",
         default=SCIX_API_BASE,
@@ -194,9 +182,7 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> None:
     rename.add_argument("new_key", help="new entry key")
     rename.set_defaults(func=run_rename)
 
-    search = subparsers.add_parser(
-        "search", help="Search entries in .bib files or folders"
-    )
+    search = subparsers.add_parser("search", help="Search entries in .bib files or folders")
     search.add_argument("query", help="case-insensitive substring to find")
     search.add_argument(
         "files",

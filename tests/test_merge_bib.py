@@ -15,9 +15,7 @@ class TestRemoveDuplicates:
             {"ID": "A1", "doi": "10.1/abc"},
         ]
 
-        new_entries, removed, same_entry_diff_doi, same_doi_entries = remove_duplicates(
-            entries
-        )
+        new_entries, removed, same_entry_diff_doi, same_doi_entries = remove_duplicates(entries)
 
         assert len(new_entries) == 1
         assert len(removed) == 1
@@ -31,9 +29,7 @@ class TestRemoveDuplicates:
             {"ID": "A1", "doi": "10.1/xyz"},
         ]
 
-        new_entries, removed, same_entry_diff_doi, same_doi_entries = remove_duplicates(
-            entries
-        )
+        new_entries, removed, same_entry_diff_doi, same_doi_entries = remove_duplicates(entries)
 
         assert len(new_entries) == 2
         assert len(removed) == 0
@@ -74,16 +70,18 @@ class TestCli:
             "@article{A1, title={One}, doi={10.1/abc}}\n",
         )
 
-        main([
-            "bib",
-            "merge",
-            "--folder",
-            str(folder),
-            "--output",
-            str(output_file),
-            "--report",
-            str(report_file),
-        ])
+        main(
+            [
+                "bib",
+                "merge",
+                "--folder",
+                str(folder),
+                "--output",
+                str(output_file),
+                "--report",
+                str(report_file),
+            ]
+        )
 
         assert output_file.exists()
         assert report_file.exists()

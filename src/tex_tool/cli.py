@@ -4,8 +4,9 @@ Every feature module exposes ``add_subparser(subparsers)`` (registers its
 command(s) and calls ``parser.set_defaults(func=run)``) plus ``run(args)``;
 this module only wires the tree and dispatches.
 """
+
 import argparse
-from typing import List, Optional
+from typing import Optional
 
 from tex_tool.abstract import extract
 from tex_tool.bib import entry_ops, merge_bib
@@ -35,7 +36,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Optional[List[str]] = None) -> None:
+def main(argv: Optional[list[str]] = None) -> None:
     args = build_parser().parse_args(argv)
     try:
         args.func(args)

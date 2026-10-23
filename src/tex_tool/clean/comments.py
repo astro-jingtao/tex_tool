@@ -1,10 +1,10 @@
 import argparse
+from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
-from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 COMMAND = "clean"
 COMMAND_HELP = "Clean a single LaTeX file with arxiv_latex_cleaner"

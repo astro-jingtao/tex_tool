@@ -1,12 +1,11 @@
 import argparse
 from pathlib import Path
-from typing import List
 
 COMMAND = "merge"
 COMMAND_HELP = "Combine two LTeX dictionary files"
 
 
-def read_lines(path: Path) -> List[str]:
+def read_lines(path: Path) -> list[str]:
     return path.read_text(encoding="utf-8").splitlines(keepends=True)
 
 

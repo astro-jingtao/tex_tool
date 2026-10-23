@@ -13,9 +13,9 @@ Pipeline:
 """
 
 import argparse
-import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import re
+from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Known LaTeX math commands — when encountered *outside* math mode they are
@@ -23,69 +23,276 @@ from typing import Dict, List, Optional, Tuple
 # ---------------------------------------------------------------------------
 _MATH_COMMANDS: set = {
     # Greek
-    "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta",
-    "iota", "kappa", "lambda", "mu", "nu", "xi", "pi", "rho", "sigma", "tau",
-    "upsilon", "phi", "chi", "psi", "omega",
-    "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta",
-    "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Pi", "Rho", "Sigma", "Tau",
-    "Upsilon", "Phi", "Chi", "Psi", "Omega",
-    "varepsilon", "vartheta", "varpi", "varrho", "varsigma", "varphi",
+    "alpha",
+    "beta",
+    "gamma",
+    "delta",
+    "epsilon",
+    "zeta",
+    "eta",
+    "theta",
+    "iota",
+    "kappa",
+    "lambda",
+    "mu",
+    "nu",
+    "xi",
+    "pi",
+    "rho",
+    "sigma",
+    "tau",
+    "upsilon",
+    "phi",
+    "chi",
+    "psi",
+    "omega",
+    "Alpha",
+    "Beta",
+    "Gamma",
+    "Delta",
+    "Epsilon",
+    "Zeta",
+    "Eta",
+    "Theta",
+    "Iota",
+    "Kappa",
+    "Lambda",
+    "Mu",
+    "Nu",
+    "Xi",
+    "Pi",
+    "Rho",
+    "Sigma",
+    "Tau",
+    "Upsilon",
+    "Phi",
+    "Chi",
+    "Psi",
+    "Omega",
+    "varepsilon",
+    "vartheta",
+    "varpi",
+    "varrho",
+    "varsigma",
+    "varphi",
     # Relations
-    "leq", "geq", "ll", "gg", "neq", "equiv", "approx", "sim", "simeq",
-    "propto", "doteq", "prec", "succ", "preceq", "succeq",
-    "lesssim", "gtrsim", "lessgtr", "gtrless",
-    "subset", "supset", "subseteq", "supseteq",
-    "in", "ni", "notin", "mid", "parallel", "perp",
-    "cong", "asymp", "bowtie", "models", "dashv", "vdash",
-    "smile", "frown",
+    "leq",
+    "geq",
+    "ll",
+    "gg",
+    "neq",
+    "equiv",
+    "approx",
+    "sim",
+    "simeq",
+    "propto",
+    "doteq",
+    "prec",
+    "succ",
+    "preceq",
+    "succeq",
+    "lesssim",
+    "gtrsim",
+    "lessgtr",
+    "gtrless",
+    "subset",
+    "supset",
+    "subseteq",
+    "supseteq",
+    "in",
+    "ni",
+    "notin",
+    "mid",
+    "parallel",
+    "perp",
+    "cong",
+    "asymp",
+    "bowtie",
+    "models",
+    "dashv",
+    "vdash",
+    "smile",
+    "frown",
     # Binary operators
-    "pm", "mp", "times", "div", "cdot", "ast", "star",
-    "circ", "bullet", "diamond", "oplus", "ominus", "otimes",
-    "cup", "cap", "setminus", "wedge", "vee",
-    "sqcup", "sqcap", "triangleleft", "triangleright",
-    "bigcirc", "bigtriangleup", "bigtriangledown",
-    "land", "lor", "lnot", "neg",
+    "pm",
+    "mp",
+    "times",
+    "div",
+    "cdot",
+    "ast",
+    "star",
+    "circ",
+    "bullet",
+    "diamond",
+    "oplus",
+    "ominus",
+    "otimes",
+    "cup",
+    "cap",
+    "setminus",
+    "wedge",
+    "vee",
+    "sqcup",
+    "sqcap",
+    "triangleleft",
+    "triangleright",
+    "bigcirc",
+    "bigtriangleup",
+    "bigtriangledown",
+    "land",
+    "lor",
+    "lnot",
+    "neg",
     # Arrows
-    "rightarrow", "leftarrow", "Rightarrow", "Leftarrow",
-    "longrightarrow", "longleftarrow", "Longrightarrow", "Longleftarrow",
-    "to", "mapsto", "leftrightarrow", "Leftrightarrow",
-    "uparrow", "downarrow", "Uparrow", "Downarrow",
-    "nearrow", "searrow", "swarrow", "nwarrow",
-    "rightleftharpoons", "leftharpoonup", "rightharpoonup",
-    "hookrightarrow", "hookleftarrow",
+    "rightarrow",
+    "leftarrow",
+    "Rightarrow",
+    "Leftarrow",
+    "longrightarrow",
+    "longleftarrow",
+    "Longrightarrow",
+    "Longleftarrow",
+    "to",
+    "mapsto",
+    "leftrightarrow",
+    "Leftrightarrow",
+    "uparrow",
+    "downarrow",
+    "Uparrow",
+    "Downarrow",
+    "nearrow",
+    "searrow",
+    "swarrow",
+    "nwarrow",
+    "rightleftharpoons",
+    "leftharpoonup",
+    "rightharpoonup",
+    "hookrightarrow",
+    "hookleftarrow",
     # Misc math symbols
-    "infty", "partial", "nabla", "forall", "exists", "nexists",
-    "emptyset", "varnothing", "aleph",
-    "top", "bot", "angle", "triangle", "square",
-    "cdots", "vdots", "ddots", "ldots",
-    "sum", "prod", "int", "oint", "coprod", "bigcup", "bigcap",
-    "Re", "Im", "ell", "hbar", "imath", "jmath",
-    "prime", "backslash", "surd", "pound", "S", "P",
+    "infty",
+    "partial",
+    "nabla",
+    "forall",
+    "exists",
+    "nexists",
+    "emptyset",
+    "varnothing",
+    "aleph",
+    "top",
+    "bot",
+    "angle",
+    "triangle",
+    "square",
+    "cdots",
+    "vdots",
+    "ddots",
+    "ldots",
+    "sum",
+    "prod",
+    "int",
+    "oint",
+    "coprod",
+    "bigcup",
+    "bigcap",
+    "Re",
+    "Im",
+    "ell",
+    "hbar",
+    "imath",
+    "jmath",
+    "prime",
+    "backslash",
+    "surd",
+    "pound",
+    "S",
+    "P",
     # Functions
-    "sin", "cos", "tan", "cot", "sec", "csc",
-    "arcsin", "arccos", "arctan",
-    "sinh", "cosh", "tanh", "coth",
-    "exp", "log", "ln", "lg", "det", "dim", "hom", "ker",
-    "deg", "arg", "gcd", "lim", "max", "min", "sup", "inf",
-    "Pr", "limsup", "liminf", "injlim", "projlim",
+    "sin",
+    "cos",
+    "tan",
+    "cot",
+    "sec",
+    "csc",
+    "arcsin",
+    "arccos",
+    "arctan",
+    "sinh",
+    "cosh",
+    "tanh",
+    "coth",
+    "exp",
+    "log",
+    "ln",
+    "lg",
+    "det",
+    "dim",
+    "hom",
+    "ker",
+    "deg",
+    "arg",
+    "gcd",
+    "lim",
+    "max",
+    "min",
+    "sup",
+    "inf",
+    "Pr",
+    "limsup",
+    "liminf",
+    "injlim",
+    "projlim",
     # Accents
-    "hat", "tilde", "bar", "vec", "dot", "ddot", "widehat", "widetilde",
-    "check", "breve", "acute", "grave",
+    "hat",
+    "tilde",
+    "bar",
+    "vec",
+    "dot",
+    "ddot",
+    "widehat",
+    "widetilde",
+    "check",
+    "breve",
+    "acute",
+    "grave",
     # Delimiters
-    "langle", "rangle", "lceil", "rceil", "lfloor", "rfloor",
+    "langle",
+    "rangle",
+    "lceil",
+    "rceil",
+    "lfloor",
+    "rfloor",
     # Sizing / spacing
-    "big", "Big", "bigg", "Bigg",
-    "quad", "qquad", "!", ",", ":", ";",
+    "big",
+    "Big",
+    "bigg",
+    "Bigg",
+    "quad",
+    "qquad",
+    "!",
+    ",",
+    ":",
+    ";",
     # Modifier commands (used inside math mode but sometimes appear bare)
-    "text", "textrm", "textsf", "texttt",
+    "text",
+    "textrm",
+    "textsf",
+    "texttt",
     # Units and special
-    "AA", "Angstrom", "micron", "degree", "dag", "ddag",
-    "copyright", "pounds",
-    "LaTeX", "TeX",
+    "AA",
+    "Angstrom",
+    "micron",
+    "degree",
+    "dag",
+    "ddag",
+    "copyright",
+    "pounds",
+    "LaTeX",
+    "TeX",
 }
 
 # Mapping: {<font-tag> -> <MathJax-command>}
-_FONT_TAG_MAP: Dict[str, str] = {
+_FONT_TAG_MAP: dict[str, str] = {
     "tt": "tt",
     "rm": "rm",
     "sc": "text",
@@ -95,7 +302,7 @@ _FONT_TAG_MAP: Dict[str, str] = {
     "sf": "mathsf",
 }
 
-_FONT_CMD_MAP: Dict[str, str] = {
+_FONT_CMD_MAP: dict[str, str] = {
     r"\textbf": "mathbf",
     r"\textit": "mathit",
     r"\textsf": "mathsf",
@@ -106,7 +313,7 @@ _FONT_CMD_MAP: Dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Helper: balanced-brace extraction
 # ---------------------------------------------------------------------------
-def extract_balanced_braces(s: str, start: int) -> Tuple[str, int]:
+def extract_balanced_braces(s: str, start: int) -> tuple[str, int]:
     """Return *(content, end_pos)* for balanced ``{...}`` starting at *start*.
 
     The opening brace at *start* and its matching close are stripped;
@@ -135,7 +342,7 @@ def extract_balanced_braces(s: str, start: int) -> Tuple[str, int]:
     raise ValueError(f"Unbalanced braces starting at position {start}")
 
 
-def _extract_balanced_brackets(s: str, start: int) -> Tuple[str, int]:
+def _extract_balanced_brackets(s: str, start: int) -> tuple[str, int]:
     """Like :func:`extract_balanced_braces` but for ``[...]``."""
     if start >= len(s) or s[start] != "[":
         raise ValueError(f"No opening bracket at position {start}")
@@ -214,7 +421,7 @@ _NEWCMD_START_RE = re.compile(
 )
 
 
-def parse_newcommands(content: str) -> Dict[str, dict]:
+def parse_newcommands(content: str) -> dict[str, dict]:
     """Extract ``\\newcommand`` (and ``\\renewcommand``, ``\\providecommand``)
     definitions from *content*.
 
@@ -223,8 +430,7 @@ def parse_newcommands(content: str) -> Dict[str, dict]:
 
     Returns a dict keyed by command name (with leading backslash)::
 
-        {"\\foo": {"body": "bar", "num_args": 0, "has_optional": False,
-                    "default": ""}}
+        {"\\foo": {"body": "bar", "num_args": 0, "has_optional": False, "default": ""}}
     """
     # Use line-anchored search so we don't match a commented-out
     # \begin{document} inside the preamble instructions.
@@ -234,7 +440,7 @@ def parse_newcommands(content: str) -> Dict[str, dict]:
     # Clean comments so commented-out definitions are ignored.
     preamble = clean_latex_comments(preamble)
 
-    definitions: Dict[str, dict] = {}
+    definitions: dict[str, dict] = {}
 
     for m in _NEWCMD_START_RE.finditer(preamble):
         # Command name
@@ -270,12 +476,10 @@ def parse_newcommands(content: str) -> Dict[str, dict]:
 # ---------------------------------------------------------------------------
 # Step 4: expand macros
 # ---------------------------------------------------------------------------
-def _expand_single_arg_command(
-    text: str, cmd_name: str, defn: dict
-) -> str:
+def _expand_single_arg_command(text: str, cmd_name: str, defn: dict) -> str:
     """Expand all occurrences of *cmd_name* (which takes arguments) in *text*."""
     cmd_len = len(cmd_name)
-    result: List[str] = []
+    result: list[str] = []
     i = 0
 
     while i < len(text):
@@ -294,7 +498,7 @@ def _expand_single_arg_command(
                 j += 1
 
             saved_j = j
-            args: List[str] = []
+            args: list[str] = []
 
             # Optional argument?
             if defn["has_optional"]:
@@ -345,7 +549,7 @@ def _expand_single_arg_command(
     return "".join(result)
 
 
-def expand_macros(text: str, definitions: Dict[str, dict]) -> str:
+def expand_macros(text: str, definitions: dict[str, dict]) -> str:
     """Expand user-defined macros in *text* iteratively to a fixed point.
 
     Only commands present in *definitions* are expanded — unknown
@@ -354,12 +558,8 @@ def expand_macros(text: str, definitions: Dict[str, dict]) -> str:
     if not definitions:
         return text
 
-    zero_arg = {
-        k: v for k, v in definitions.items() if v["num_args"] == 0
-    }
-    arg_cmds = {
-        k: v for k, v in definitions.items() if v["num_args"] > 0
-    }
+    zero_arg = {k: v for k, v in definitions.items() if v["num_args"] == 0}
+    arg_cmds = {k: v for k, v in definitions.items() if v["num_args"] > 0}
 
     zero_arg_sorted = sorted(zero_arg.items(), key=lambda x: -len(x[0]))
 
@@ -385,11 +585,11 @@ def expand_macros(text: str, definitions: Dict[str, dict]) -> str:
 # ---------------------------------------------------------------------------
 # Step 5: math-region detection
 # ---------------------------------------------------------------------------
-def find_math_regions(text: str) -> List[Tuple[int, int]]:
+def find_math_regions(text: str) -> list[tuple[int, int]]:
     """Return a sorted list of ``(start, end)`` index pairs for every
     ``$...$``, ``$$...$$``, ``\\(...\\)``, and ``\\[...\\]`` region.
     """
-    regions: List[Tuple[int, int]] = []
+    regions: list[tuple[int, int]] = []
 
     # --- $$ ... $$ (display math) ---
     dd_positions: set = set()
@@ -435,24 +635,19 @@ def find_math_regions(text: str) -> List[Tuple[int, int]]:
     return sorted(regions)
 
 
-def _is_inside_math(pos: int, math_regions: List[Tuple[int, int]]) -> bool:
+def _is_inside_math(pos: int, math_regions: list[tuple[int, int]]) -> bool:
     """Return *True* if *pos* falls inside any math region."""
-    for start, end in math_regions:
-        if start <= pos < end:
-            return True
-    return False
+    return any(start <= pos < end for start, end in math_regions)
 
 
 # ---------------------------------------------------------------------------
 # Step 6: wrap standalone math commands in $...$
 # ---------------------------------------------------------------------------
-def wrap_standalone_math_commands(
-    text: str, math_regions: List[Tuple[int, int]]
-) -> str:
+def wrap_standalone_math_commands(text: str, math_regions: list[tuple[int, int]]) -> str:
     """Wrap known LaTeX math commands that appear **outside** math mode in
     ``$cmd$`` so the arXiv abstract renderer recognises them.
     """
-    result: List[str] = []
+    result: list[str] = []
     i = 0
     while i < len(text):
         if text[i] == "\\" and i + 1 < len(text):
@@ -462,9 +657,7 @@ def wrap_standalone_math_commands(
                 j += 1
             if j > i + 1:
                 cmd_name = text[i + 1 : j]
-                if cmd_name in _MATH_COMMANDS and not _is_inside_math(
-                    i, math_regions
-                ):
+                if cmd_name in _MATH_COMMANDS and not _is_inside_math(i, math_regions):
                     result.append("$" + text[i:j] + "$")
                     i = j
                     continue
@@ -477,11 +670,11 @@ def wrap_standalone_math_commands(
 # Step 7: convert font / style commands outside math mode
 # ---------------------------------------------------------------------------
 def _replace_font_braced(
-    text: str, tag: str, math_cmd: str, math_regions: List[Tuple[int, int]]
+    text: str, tag: str, math_cmd: str, math_regions: list[tuple[int, int]]
 ) -> str:
     """Replace ``{\\tag ...}`` with ``$\\math_cmd{...}$`` (outside math)."""
     prefix = "{\\" + tag
-    result: List[str] = []
+    result: list[str] = []
     i = 0
     while i < len(text):
         pos = text.find(prefix, i)
@@ -503,7 +696,7 @@ def _replace_font_braced(
             # content = "\tt raddest" (or similar — varies by tag)
             # Strip the leading "\tag" and any whitespace to get the payload.
             tag_prefix = "\\" + tag
-            inner = content[len(tag_prefix):].lstrip()
+            inner = content[len(tag_prefix) :].lstrip()
             replacement = "$\\" + math_cmd + "{" + inner + "}$"
             result.append(replacement)
             i = end_pos
@@ -515,11 +708,11 @@ def _replace_font_braced(
 
 
 def _replace_font_cmd(
-    text: str, cmd: str, math_cmd: str, math_regions: List[Tuple[int, int]]
+    text: str, cmd: str, math_cmd: str, math_regions: list[tuple[int, int]]
 ) -> str:
     """Replace ``\\cmd{...}`` with ``$\\math_cmd{...}$`` (outside math)."""
     prefix = cmd + "{"
-    result: List[str] = []
+    result: list[str] = []
     i = 0
     while i < len(text):
         pos = text.find(prefix, i)
@@ -547,12 +740,10 @@ def _replace_font_cmd(
     return "".join(result)
 
 
-def _replace_textcolor(
-    text: str, math_regions: List[Tuple[int, int]]
-) -> str:
+def _replace_textcolor(text: str, math_regions: list[tuple[int, int]]) -> str:
     """Replace ``\\textcolor{color}{content}`` with *content* (outside math)."""
     prefix = "\\textcolor{"
-    result: List[str] = []
+    result: list[str] = []
     i = 0
     while i < len(text):
         pos = text.find(prefix, i)
@@ -584,9 +775,7 @@ def _replace_textcolor(
     return "".join(result)
 
 
-def convert_font_commands(
-    text: str, math_regions: List[Tuple[int, int]]
-) -> str:
+def convert_font_commands(text: str, math_regions: list[tuple[int, int]]) -> str:
     """Convert LaTeX font/style commands outside math mode to arXiv-compatible
     MathJax equivalents."""
     # {\tag ...} patterns
@@ -611,7 +800,7 @@ def convert_special_chars(text: str) -> str:
     # Non-breaking space / tie
     text = text.replace("~", " ")
     # En-dash and em-dash
-    text = text.replace("\u2013", "-")   # –
+    text = text.replace("\u2013", "-")  # –
     text = text.replace("\u2014", "--")  # —
     # Smart quotes: `` ... '' -> " ... "
     text = text.replace("``", '"').replace("''", '"')

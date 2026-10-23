@@ -7,6 +7,7 @@ https://scixplorer.org/user/settings/token (SciX) or
 https://ui.adsabs.harvard.edu/help/api/ (ADS). If the SciX base URL is wrong
 or unreachable, retry with the ADS base (see ADS_API_BASE).
 """
+
 import urllib.error
 import urllib.request
 
@@ -33,6 +34,5 @@ def export_bibtex(bibcode: str, token: str, base_url: str = SCIX_API_BASE) -> st
         ) from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(
-            f"cannot reach {base_url} ({exc.reason}); "
-            f"retry with --api-base {ADS_API_BASE}"
+            f"cannot reach {base_url} ({exc.reason}); retry with --api-base {ADS_API_BASE}"
         ) from exc

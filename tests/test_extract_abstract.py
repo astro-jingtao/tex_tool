@@ -414,9 +414,9 @@ We use \mycmd{} and \mytt{} with \lesssim 100 pc. % a comment
             pytest.skip("sample7.tex not found")
         result = extract_abstract_from_tex(str(sample))
         # User-defined macros expanded
-        assert "I_{\\rm CO}" in result       # \ICO expanded
-        assert r"$\tt{raddest}$" in result    # \raddest expanded + font conversion
-        assert r"$\lesssim$" in result       # Math command wrapped
+        assert "I_{\\rm CO}" in result  # \ICO expanded
+        assert r"$\tt{raddest}$" in result  # \raddest expanded + font conversion
+        assert r"$\lesssim$" in result  # Math command wrapped
         # \edit expanded via \newcommand{\edit}[1]{#1}
         assert "\\edit" not in result
         # Comments removed
@@ -428,7 +428,9 @@ We use \mycmd{} and \mytt{} with \lesssim 100 pc. % a comment
 
     def test_no_abstract_returns_empty(self, tmp_path: Path) -> None:
         tex = tmp_path / "no_abstract.tex"
-        tex.write_text(r"\documentclass{article}\begin{document}No abstract\end{document}", encoding="utf-8")
+        tex.write_text(
+            r"\documentclass{article}\begin{document}No abstract\end{document}", encoding="utf-8"
+        )
         result = extract_abstract_from_tex(str(tex))
         assert result == ""
 

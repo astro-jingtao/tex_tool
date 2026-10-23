@@ -1,8 +1,7 @@
 import argparse
 import json
-import re
 from pathlib import Path
-from typing import Dict, List
+import re
 
 DEFAULT_NEW_COMMAND_FILE = "./new_command.tex"
 DEFAULT_SETTING_FILE = "./setting.json"
@@ -15,13 +14,9 @@ def is_empty_line(line: str) -> bool:
     return len(line.replace(" ", "").replace("\n", "")) == 0
 
 
-def build_setting(lines: List[str]) -> Dict[str, str]:
+def build_setting(lines: list[str]) -> dict[str, str]:
     pattern = r"\{(.*?)\}"
-    return {
-        re.findall(pattern, line)[0]: "dummy"
-        for line in lines
-        if not is_empty_line(line)
-    }
+    return {re.findall(pattern, line)[0]: "dummy" for line in lines if not is_empty_line(line)}
 
 
 def convert_new_commands(new_command_file: str, setting_file: str) -> None:

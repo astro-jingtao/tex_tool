@@ -1,0 +1,299 @@
+# =============================================================================
+# Ruff baseline for agent-assisted Python package development
+# =============================================================================
+#
+# Use this file only when the repository has no existing Ruff configuration in:
+#   * [tool.ruff] in pyproject.toml
+#   * ruff.toml
+#   * .ruff.toml
+#
+# Before using it, the agent should:
+#   1. Read project.requires-python and set target-version to the minimum
+#      supported Python version.
+#   2. Detect whether the project uses a src layout or a flat layout and adjust
+#      src accordingly.
+#   3. Run `ruff check .` once without fixes and review the initial findings.
+#   4. Apply safe fixes only, review the diff, and run the test suite.
+#
+# Recommended commands:
+#   ruff check .
+#   ruff format --check .
+#   ruff check --fix .       # safe fixes only
+#   ruff format .
+#
+# Do not apply `--unsafe-fixes` automatically.
+# Pin the Ruff version used by CI so that newly added rules do not unexpectedly
+# change the quality gate.
+
+# Minimum Python version that the source code must support. This affects parsing,
+# version-aware checks, and which syntax-modernization fixes Ruff may suggest.
+# Change this to match the lower bound in project.requires-python.
+target-version = "py39"
+
+# Directories that contain first-party source code. This helps Ruff classify and
+# sort first-party imports. For a flat-layout package, use src = ["."], or list
+# both locations if the repository contains both kinds of source trees.
+src = ["src"]
+
+# Shared width used by the linter and formatter. Ruff treats this as a target,
+# not an absolute limit for URLs, long strings, or other unsplittable constructs.
+line-length = 100
+
+# Number of spaces per indentation level.
+indent-width = 4
+
+# Add project-specific generated/cache directories to Ruff's built-in excludes.
+# `extend-exclude` preserves Ruff's default exclusions.
+extend-exclude = [
+    "htmlcov",
+    "generated",
+    "_generated",
+    ".pytype",
+    ".pyre",
+    ".ipynb_checkpoints",
+]
+
+
+[lint]
+
+# Select explicit rule families instead of ALL. ALL changes as Ruff adds rules
+# and can introduce conflicting or highly opinionated checks after an upgrade.
+select = [
+    # pycodestyle: import placement, statement structure, and syntax-like errors.
+    # E402, for example, reports module-level imports that are not at the top.
+    "E4",
+    "E7",
+    "E9",
+
+    # Pyflakes: undefined names, unused imports, duplicate definitions, invalid
+    # __all__ entries, and many other high-confidence correctness problems.
+    "F",
+
+    # isort: group and sort standard-library, third-party, and first-party imports.
+    "I",
+
+    # pyupgrade: version-aware modernization based on target-version.
+    "UP",
+
+    # flake8-bugbear: likely bugs and fragile constructs, such as mutable default
+    # arguments and late-bound loop variables in closures.
+    "B",
+
+    # flake8-simplify: unnecessarily complex Boolean and control-flow constructs.
+    "SIM",
+
+    # flake8-comprehensions: unnecessary or inefficient comprehensions/copies.
+    "C4",
+
+    # McCabe C901: functions whose cyclomatic complexity exceeds max-complexity.
+    "C901",
+
+    # High-confidence Pylint-derived errors and warnings.
+    "PLE",
+    "PLW",
+
+    # PLC0415: imports outside the module level, including function-local lazy
+    # imports. Narrow noqa exceptions may be justified for optional dependencies.
+    "PLC0415",
+
+    # PLR0402: prefer `from concurrent import futures` over the redundant alias
+    # form `import concurrent.futures as futures`. This is a readability rule,
+    # not an architectural import rule.
+    "PLR0402",
+
+    # Function-size and interface-complexity checks.
+    "PLR0911",  # too many return statements
+    "PLR0912",  # too many branches
+    "PLR0913",  # too many arguments
+    "PLR0914",  # too many local variables
+    "PLR0915",  # too many statements
+    "PLR0917",  # too many positional arguments
+
+    # Require docstrings on public modules, classes, methods, functions, packages,
+    # nested classes, and __init__ methods. These rules check presence and basic
+    # docstring form, not whether the prose is semantically useful.
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D106",
+    "D107",
+
+    # If a Google-style docstring contains an Args: section, require that section
+    # to document every parameter. D417 does NOT require every docstring to have
+    # an Args: section; a one-line docstring can still pass it.
+    "D417",
+
+    # Require type annotations on function parameters and return values. ANN401
+    # (forbidding Any) is intentionally not enabled as part of this baseline.
+    "ANN001",
+    "ANN201",
+    "ANN202",
+    "ANN204",
+    "ANN205",
+    "ANN206",
+
+    # TID252: reject relative imports according to ban-relative-imports below.
+    "TID252",
+
+    # Return-flow and exception-raising correctness/readability.
+    "RET",
+    "RSE",
+
+    # Small correctness and redundancy checks.
+    "PIE",
+
+    # pytest-specific correctness and style checks.
+    "PT",
+
+    # Detect forgotten pdb/breakpoint calls.
+    "T10",
+
+    # Logging API misuse and avoidable eager/preformatted logging messages.
+    "LOG",
+
+    # Selected exception-handling rules. Strongly opinionated message/class rules
+    # are deliberately omitted from this general baseline.
+    "TRY002",
+    "TRY004",
+    "TRY201",
+    "TRY300",
+    "TRY301",
+    "TRY400",
+    "TRY401",
+
+    # Detect timezone-naive datetime usage that commonly causes data bugs.
+    "DTZ",
+
+    # Prefer modern pathlib APIs for filesystem paths where practical.
+    "PTH",
+
+    # Detect code that appears to have been commented out. Version control should
+    # preserve obsolete implementations instead of source comments.
+    "ERA",
+
+    # Common Python performance anti-patterns.
+    "PERF",
+
+    # Modern readability, correctness, and performance suggestions from refurb.
+    "FURB",
+
+    # Ruff-native checks, including malformed, blanket, or unused noqa comments.
+    "RUF",
+]
+
+# Globally disabled rules that are noisy, formatter-conflicting, or too
+# opinionated for a cross-project baseline.
+ignore = [
+    "COM812",  # trailing-comma rule can conflict with formatter behavior
+    "ISC001",  # single-line implicit concatenation can conflict with formatter
+    "RET504",  # a named value before return can improve debugging/readability
+    "SIM108",  # ternary expressions are not always clearer than if/else
+    "PTH123",  # requiring Path.open over open has limited general benefit
+    "RUF012",  # false positives in ORM/Pydantic/declarative class models
+    "ERA001",  # Commented-out code is not bad
+    "PTH118",  # `os.path.join()` is not bad
+    "PTH208",  # `os.listdir` is not bad
+]
+
+# `--fix` may apply all fixes that Ruff classifies as safe. Unsafe fixes still
+# require the explicit --unsafe-fixes command-line flag and should not be applied
+# automatically by an agent.
+fixable = ["ALL"]
+unfixable = []
+
+# Preview rules and preview formatter behavior are intentionally excluded from a
+# stable quality gate.
+preview = false
+
+# Names matching this expression are treated as intentionally unused variables.
+dummy-variable-rgx = "^(_+|(_+[A-Za-z0-9_]*[A-Za-z0-9]+))$"
+
+# Unicode characters that are intentional in Chinese comments and docstrings.
+# Keep this list narrow: each entry disables ambiguity warnings for that exact
+# character in strings, docstrings, and comments.
+allowed-confusables = [
+    "（",  # FULLWIDTH LEFT PARENTHESIS, U+FF08
+    "）",  # FULLWIDTH RIGHT PARENTHESIS, U+FF09
+    "，",  # FULLWIDTH COMMA, U+FF0C
+    "：",  # FULLWIDTH COLON, U+FF1A
+    "；",  # FULLWIDTH SEMICOLON, U+FF1B
+    "！",  # FULLWIDTH EXCLAMATION MARK, U+FF01
+    "？",  # FULLWIDTH QUESTION MARK, U+FF1F
+]
+
+[lint.mccabe]
+# Maximum cyclomatic complexity for one function. Values above 10 usually merit
+# decomposing responsibilities or simplifying control flow.
+max-complexity = 10
+
+
+[lint.pylint]
+# Maintainability limits for individual functions. These do not limit the total
+# number of lines in a Python file; file-length checks require another tool.
+max-args = 8
+max-positional-args = 5
+max-returns = 6
+max-branches = 12
+max-locals = 15
+max-statements = 50
+
+
+[lint.isort]
+# Combine compatible aliased imports and sort names within each import section.
+combine-as-imports = true
+force-sort-within-sections = true
+split-on-trailing-comma = true
+
+# If Ruff cannot identify the package as first-party, add a project-specific line:
+# known-first-party = ["package_name"]
+
+
+[lint.flake8-tidy-imports]
+# Reject both parent-relative and sibling-relative imports. If an established
+# project intentionally uses relative imports, preserve its policy instead of
+# forcing this default onto it.
+ban-relative-imports = "all"
+
+
+[lint.pydocstyle]
+# Use Google-style section semantics. In particular, D417 understands Args:.
+convention = "numpy"
+
+
+[lint.per-file-ignores]
+# Test names normally communicate test intent, so tests are exempt from public
+# docstring requirements and some signature/annotation limits.
+"tests/**/*.py" = [
+    "D100", "D101", "D102", "D103", "D104", "D107", "D417",
+    "PLR0913", "PLR0917",
+    "ANN001", "ANN201", "ANN202",
+]
+"**/test_*.py" = [
+    "D100", "D101", "D102", "D103", "D104", "D107", "D417",
+    "PLR0913", "PLR0917",
+    "ANN001", "ANN201", "ANN202",
+]
+
+# Legacy build scripts sometimes import after modifying sys.path.
+"setup.py" = ["E402"]
+
+# pytest infrastructure often contains fixtures that do not benefit from the same
+# public API documentation and annotation requirements as library code.
+"conftest.py" = ["D100", "D103", "D417", "ANN001", "ANN201"]
+
+
+[format]
+# Formatter choices close to Black's defaults.
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+# Format Python examples embedded in docstrings.
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+# Keep formatter behavior stable rather than opting into preview changes.
+preview = false

@@ -13,19 +13,9 @@ def _write_bib(path: Path, entries: str) -> None:
 
 
 EXISTING = (
-    "@article{A1,\n"
-    "  title = {Alpha Paper},\n"
-    "  author = {Doe, Jane},\n"
-    "  doi = {10.1/abc}\n"
-    "}\n"
+    "@article{A1,\n  title = {Alpha Paper},\n  author = {Doe, Jane},\n  doi = {10.1/abc}\n}\n"
 )
-INCOMING = (
-    "@article{B2,\n"
-    "  title = {Beta Paper},\n"
-    "  author = {Roe, Richard},\n"
-    "  year = {2024}\n"
-    "}\n"
-)
+INCOMING = "@article{B2,\n  title = {Beta Paper},\n  author = {Roe, Richard},\n  year = {2024}\n}\n"
 
 
 class TestAdd:
@@ -170,10 +160,15 @@ class TestAddCli:
 
         main(
             [
-                "bib", "add", str(target),
-                "--scix", "2024ApJS..272...24C",
-                "--token", "tok",
-                "--rename", "jing2024",
+                "bib",
+                "add",
+                str(target),
+                "--scix",
+                "2024ApJS..272...24C",
+                "--token",
+                "tok",
+                "--rename",
+                "jing2024",
             ]
         )
 
