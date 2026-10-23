@@ -95,7 +95,7 @@ Line two.
         assert end == 14
 
     def test_extract_balanced_braces_unbalanced_raises(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Unbalanced braces"):
             extract_balanced_braces("{abc", 0)
 
     # ------------------------------------------------------------------

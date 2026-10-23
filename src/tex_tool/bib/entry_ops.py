@@ -89,9 +89,10 @@ def rename_entry(bib_file: str, old_key: str, new_key: str) -> None:
 
 
 def collect_entries(paths: list[str]) -> list[dict[str, str]]:
+    """Collect entries from a mix of .bib files and folders of .bib files."""
     entries: list[dict[str, str]] = []
     for path in paths:
-        if os.path.isdir(path):
+        if Path(path).is_dir():
             entries += read_all_bibs(path)
         else:
             entries += read_entries(path)
@@ -122,6 +123,7 @@ def search_entries(
 
 
 def run_add(args: argparse.Namespace) -> None:
+    """Handle ``bib add``: fetch the entry (SciX or .bib file) and append it."""
     if args.scix:
         token = args.token or os.environ.get(SCIX_TOKEN_ENV)
         if not token:
@@ -135,11 +137,13 @@ def run_add(args: argparse.Namespace) -> None:
 
 
 def run_rename(args: argparse.Namespace) -> None:
+    """Handle ``bib rename``: rename one entry key in the target .bib file."""
     rename_entry(args.bib_file, args.old_key, args.new_key)
     print(f"Renamed '{args.old_key}' to '{args.new_key}' in {args.bib_file}")
 
 
 def run_search(args: argparse.Namespace) -> None:
+    """Handle ``bib search``: print the matching entries."""
     matches = search_entries(args.files, args.query, field=args.field)
     if not matches:
         print("No entries found.")
@@ -151,6 +155,7 @@ def run_search(args: argparse.Namespace) -> None:
 
 
 def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    """Register the ``add`` / ``rename`` / ``search`` subcommands on *subparsers*."""
     add = subparsers.add_parser(
         "add", help="Add a BibTeX entry from SciX (by bibcode) or from a .bib file"
     )

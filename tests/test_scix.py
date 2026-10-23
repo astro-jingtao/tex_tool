@@ -18,10 +18,10 @@ class TestExportBibtexOffline:
             def read(self):
                 return self._payload
 
-            def __enter__(self):
+            def __enter__(self) -> "FakeResponse":
                 return self
 
-            def __exit__(self, *exc):
+            def __exit__(self, *exc: object) -> bool:
                 return False
 
         def fake_urlopen(request, timeout=None):

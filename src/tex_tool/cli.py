@@ -15,6 +15,7 @@ from tex_tool.ltex import combine_dict, new_command_to_setting
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the ``tex-tool`` argument parser with the whole subcommand tree."""
     parser = argparse.ArgumentParser(
         prog="tex-tool",
         description="Utilities for TeX, BibTeX, and LTeX.",
@@ -37,6 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[list[str]] = None) -> None:
+    """Parse *argv* (default: ``sys.argv``) and dispatch to the chosen subcommand."""
     args = build_parser().parse_args(argv)
     try:
         args.func(args)

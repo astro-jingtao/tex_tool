@@ -1,3 +1,9 @@
+"""Merge the .bib files of a folder into one file, de-duplicating entries.
+
+Duplicates are detected by entry ID; entries sharing a DOI can additionally
+be reported or removed (:func:`remove_duplicates`).
+"""
+
 import argparse
 import os
 
@@ -16,11 +22,13 @@ def parse_entries(bibtex_text: str) -> list[dict[str, str]]:
 
 
 def read_entries(filename: str) -> list[dict[str, str]]:
+    """Read all BibTeX entries from the .bib file *filename*."""
     with open(filename, encoding="utf-8") as bibtex_file:
         return parse_entries(bibtex_file.read())
 
 
 def write_entries(entries: list[dict[str, str]], filename: str) -> None:
+    """Serialize *entries* to the .bib file *filename*."""
     bib_database = bibtexparser.bibdatabase.BibDatabase()
     bib_database.entries = entries
     with open(filename, "w", encoding="utf-8") as bibtex_file:
@@ -28,6 +36,7 @@ def write_entries(entries: list[dict[str, str]], filename: str) -> None:
 
 
 def read_all_bibs(folder: str) -> list[dict[str, str]]:
+    """Read and concatenate the entries of every .bib file directly inside *folder*."""
     entries: list[dict[str, str]] = []
     for file in os.listdir(folder):
         if file.endswith(".bib"):
@@ -44,6 +53,16 @@ def remove_duplicates(
     list[dict[str, str]],
     list[list[dict[str, str]]],
 ]:
+    """De-duplicate BibTeX *entries* by entry ID, tracking DOI relations.
+
+    Returns ``(kept, removed, same_entry_diff_doi, same_doi_groups)``:
+    ``kept`` maps surviving IDs to entries — an ID collision without a
+    matching DOI survives under a renamed ``<ID>_1``-style key and is listed
+    in ``same_entry_diff_doi``; ``removed`` holds dropped entries, each with
+    an added ``removed_reason`` field (exact ID+DOI duplicates, plus later
+    members of a same-DOI group when *remove_same_doi* is set);
+    ``same_doi_groups`` lists every group of kept entries sharing one DOI.
+    """
     new_entries_dict: dict[str, dict[str, str]] = {}
     removed: list[dict[str, str]] = []
     same_entry_diff_doi: list[dict[str, str]] = []
@@ -92,6 +111,7 @@ def remove_duplicates(
 
 
 def get_doi_dict(entries_dict: dict[str, dict[str, str]]) -> dict[str, list[str]]:
+    """Map each DOI appearing in *entries_dict* to the entry IDs carrying it."""
     doi_dict: dict[str, list[str]] = {}
     for entry_id, this_entry in entries_dict.items():
         if "doi" in this_entry:
@@ -102,6 +122,7 @@ def get_doi_dict(entries_dict: dict[str, dict[str, str]]) -> dict[str, list[str]
 
 def write_report(
     report_path: str,
+    *,
     total_entries: int,
     merged_entries: int,
     removed: list[dict[str, str]],
@@ -109,6 +130,7 @@ def write_report(
     same_doi_entries: list[list[dict[str, str]]],
     remove_same_doi: bool,
 ) -> None:
+    """Write the merge summary report to *report_path*."""
     with open(report_path, "w", encoding="utf-8") as report_file:
         report_file.write(f"Total entries: {total_entries}\n")
         report_file.write(f"Merged entries: {merged_entries}\n")
@@ -150,6 +172,7 @@ COMMAND_HELP = "Merge .bib files from a folder with de-duplication"
 
 
 def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    """Register the ``merge`` subcommand on *subparsers*."""
     parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument(
         "-f",
@@ -179,6 +202,7 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run(args: argparse.Namespace) -> None:
+    """Handle ``bib merge``: write the merged .bib file and the report."""
     entries = read_all_bibs(args.folder)
     (
         new_entries_dict,

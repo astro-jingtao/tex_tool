@@ -476,6 +476,60 @@ def parse_newcommands(content: str) -> dict[str, dict]:
 # ---------------------------------------------------------------------------
 # Step 4: expand macros
 # ---------------------------------------------------------------------------
+def _parse_mandatory_args(text: str, pos: int, defn: dict, args: list[str]) -> Optional[int]:
+    """Append the mandatory ``{...}`` arguments of a command usage to *args*.
+
+    Returns the position just after the last argument, or *None* when the
+    text does not supply the full argument list.
+    """
+    j = pos
+    for _ in range(len(args), defn["num_args"]):
+        # Skip whitespace
+        while j < len(text) and text[j] in " \t":
+            j += 1
+        if j >= len(text) or text[j] != "{":
+            return None
+        try:
+            arg_content, j = extract_balanced_braces(text, j)
+        except ValueError:
+            return None
+        args.append(arg_content)
+    return j
+
+
+def _parse_command_usage(text: str, pos: int, defn: dict) -> Optional[tuple[list[str], int]]:
+    """Parse the argument list of one usage of an argument-taking command.
+
+    *pos* is the index just after the command name. Returns the parsed
+    arguments and the position after the last one, or *None* when the
+    text does not form a valid usage.
+    """
+    # Skip whitespace between command name and arguments
+    j = pos
+    while j < len(text) and text[j] in " \t":
+        j += 1
+
+    saved_j = j
+    args: list[str] = []
+
+    # Optional argument?
+    if defn["has_optional"]:
+        if j < len(text) and text[j] == "[":
+            try:
+                opt_content, j = _extract_balanced_brackets(text, j)
+                args.append(opt_content)
+            except ValueError:
+                args.append(defn["default"])
+                j = saved_j
+        else:
+            args.append(defn["default"])
+
+    end = _parse_mandatory_args(text, j, defn, args)
+    if end is None or len(args) != defn["num_args"]:
+        return None
+    return args, end
+
+
 def _expand_single_arg_command(text: str, cmd_name: str, defn: dict) -> str:
     """Expand all occurrences of *cmd_name* (which takes arguments) in *text*."""
     cmd_len = len(cmd_name)
@@ -492,44 +546,9 @@ def _expand_single_arg_command(text: str, cmd_name: str, defn: dict) -> str:
                 i += 1
                 continue
 
-            # Skip whitespace between command name and arguments
-            j = next_pos
-            while j < len(text) and text[j] in " \t":
-                j += 1
-
-            saved_j = j
-            args: list[str] = []
-
-            # Optional argument?
-            if defn["has_optional"]:
-                if j < len(text) and text[j] == "[":
-                    try:
-                        opt_content, j = _extract_balanced_brackets(text, j)
-                        args.append(opt_content)
-                    except ValueError:
-                        args.append(defn["default"])
-                        j = saved_j
-                else:
-                    args.append(defn["default"])
-
-            # Mandatory arguments
-            all_ok = True
-            for _ in range(len(args), defn["num_args"]):
-                # Skip whitespace
-                while j < len(text) and text[j] in " \t":
-                    j += 1
-                if j < len(text) and text[j] == "{":
-                    try:
-                        arg_content, j = extract_balanced_braces(text, j)
-                        args.append(arg_content)
-                    except ValueError:
-                        all_ok = False
-                        break
-                else:
-                    all_ok = False
-                    break
-
-            if all_ok and len(args) == defn["num_args"]:
+            parsed = _parse_command_usage(text, next_pos, defn)
+            if parsed is not None:
+                args, j = parsed
                 # Substitute #1 .. #N in body
                 body = defn["body"]
                 for arg_idx in range(defn["num_args"], 0, -1):
@@ -573,7 +592,10 @@ def expand_macros(text: str, definitions: dict[str, dict]) -> str:
             body = defn["body"]
             # Word-boundary: name must not be followed by a letter.
             pattern = re.compile(re.escape(name) + r"(?![a-zA-Z@])")
-            text = pattern.sub(lambda _m: body, text)
+            # A callable repl avoids template backslash processing (macro
+            # bodies are full of backslashes); its default argument binds
+            # this iteration's body instead of late-binding the loop variable.
+            text = pattern.sub(lambda _m, replacement=body: replacement, text)
 
         # Expand commands that take arguments.
         for name in sorted(arg_cmds, key=len, reverse=True):
@@ -585,14 +607,9 @@ def expand_macros(text: str, definitions: dict[str, dict]) -> str:
 # ---------------------------------------------------------------------------
 # Step 5: math-region detection
 # ---------------------------------------------------------------------------
-def find_math_regions(text: str) -> list[tuple[int, int]]:
-    """Return a sorted list of ``(start, end)`` index pairs for every
-    ``$...$``, ``$$...$$``, ``\\(...\\)``, and ``\\[...\\]`` region.
-    """
+def _find_display_math_regions(text: str, dd_positions: set[int]) -> list[tuple[int, int]]:
+    """Return ``$$...$$`` regions and record their ``$`` positions in *dd_positions*."""
     regions: list[tuple[int, int]] = []
-
-    # --- $$ ... $$ (display math) ---
-    dd_positions: set = set()
     i = 0
     while True:
         pos = text.find("$$", i)
@@ -605,8 +622,12 @@ def find_math_regions(text: str) -> list[tuple[int, int]]:
             i = end + 2
         else:
             i = pos + 2
+    return regions
 
-    # --- \( ... \) and \[ ... \] ---
+
+def _find_paren_math_regions(text: str) -> list[tuple[int, int]]:
+    r"""Return ``\(...\)`` and ``\[...\]`` regions."""
+    regions: list[tuple[int, int]] = []
     for sd, ed in [(r"\(", r"\)"), (r"\[", r"\]")]:
         i = 0
         while True:
@@ -618,8 +639,12 @@ def find_math_regions(text: str) -> list[tuple[int, int]]:
                 break
             regions.append((s, e + 2))
             i = e + 2
+    return regions
 
-    # --- $ ... $ (inline math, not part of $$) ---
+
+def _find_inline_math_regions(text: str, dd_positions: set[int]) -> list[tuple[int, int]]:
+    """Return ``$...$`` regions whose ``$`` characters are not part of a ``$$`` region."""
+    regions: list[tuple[int, int]] = []
     i = 0
     while i < len(text):
         if text[i] == "$" and i not in dd_positions:
@@ -631,7 +656,17 @@ def find_math_regions(text: str) -> list[tuple[int, int]]:
                 i = end + 1
                 continue
         i += 1
+    return regions
 
+
+def find_math_regions(text: str) -> list[tuple[int, int]]:
+    """Return a sorted list of ``(start, end)`` index pairs for every
+    ``$...$``, ``$$...$$``, ``\\(...\\)``, and ``\\[...\\]`` region.
+    """
+    dd_positions: set[int] = set()
+    regions = _find_display_math_regions(text, dd_positions)
+    regions += _find_paren_math_regions(text)
+    regions += _find_inline_math_regions(text, dd_positions)
     return sorted(regions)
 
 
@@ -800,7 +835,7 @@ def convert_special_chars(text: str) -> str:
     # Non-breaking space / tie
     text = text.replace("~", " ")
     # En-dash and em-dash
-    text = text.replace("\u2013", "-")  # –
+    text = text.replace("\u2013", "-")  # noqa: RUF003 - the "–" here IS the replaced glyph
     text = text.replace("\u2014", "--")  # —
     # Smart quotes: `` ... '' -> " ... "
     text = text.replace("``", '"').replace("''", '"')
@@ -873,6 +908,7 @@ COMMAND_HELP = "Extract abstract from a .tex file in arXiv-compatible format"
 
 
 def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    """Register the ``abstract`` subcommand on *subparsers*."""
     parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument(
         "input",
@@ -888,6 +924,7 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run(args: argparse.Namespace) -> None:
+    """Handle ``abstract``: extract the abstract and write or print it."""
     result = extract_abstract_from_tex(args.input)
     if args.output:
         Path(args.output).write_text(result, encoding="utf-8")

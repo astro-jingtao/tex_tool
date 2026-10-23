@@ -1,3 +1,9 @@
+"""Clean a single .tex file with the external ``arxiv_latex_cleaner`` CLI.
+
+The cleaner must be installed separately; this module copies the input to a
+temp directory, runs it there, and post-processes the result.
+"""
+
 import argparse
 from pathlib import Path
 import re
@@ -27,6 +33,12 @@ def clean_single_tex(
     output_path: Optional[str] = None,
     skip_newlines: bool = False,
 ) -> None:
+    """Clean one .tex file by running arxiv_latex_cleaner on a temp copy.
+
+    The result lands at *output_path* (default: ``<stem>_cleaned.tex`` next
+    to the input); runs of 3+ blank lines are collapsed afterwards unless
+    *skip_newlines* is set.
+    """
     input_file = Path(input_path).resolve()
 
     if not input_file.exists() or input_file.suffix != ".tex":
@@ -70,6 +82,7 @@ def clean_single_tex(
 
 
 def add_subparser(subparsers: argparse._SubParsersAction) -> None:
+    """Register the ``clean`` subcommand on *subparsers*."""
     parser = subparsers.add_parser(COMMAND, help=COMMAND_HELP)
     parser.add_argument("input", help="Input .tex file")
     parser.add_argument("-o", "--output", help="Output filename")
@@ -82,4 +95,5 @@ def add_subparser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run(args: argparse.Namespace) -> None:
+    """Handle ``clean``: clean the input .tex file."""
     clean_single_tex(args.input, args.output, skip_newlines=args.keep_newlines)
